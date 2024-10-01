@@ -15,7 +15,7 @@
   - [11. What do you usually pay for in the cloud?](#11-what-do-you-usually-pay-for-in-the-cloud)
   - [12. What are the 4 Pillars of DevOps, and how do they link into the Cloud?](#12-what-are-the-4-pillars-of-devops-and-how-do-they-link-into-the-cloud)
 - [Linux](#linux)
-  - [**Commands:**](#commands)
+  - [**Common Commands:**](#common-commands)
 
 ## 1. How do we know if something is in the cloud? 
 Cloud services are typically accessed over the internet, meaning the data or application isn't hosted locally. If you're accessing resources or apps without needing specific local hardware, it's likely cloud-based.
@@ -82,8 +82,8 @@ While the cloud offers lower upfront costs, long-term costs can be higher due to
 2. Microsoft Azure
 3. Google Cloud Platform
 
-Here is a visual representation of market trends:
-
+Market share breakdown:
+![Market Share](images/AWS-s-Azure-vs-Google-Market-sale-1-1024x498.png)
 
 
 ## 9. What are the 3 largest Cloud providers known for?
@@ -124,4 +124,3 @@ The best cloud provider depends on your needs:
 * `touch`: Create a new, empty file 
 * `cat`: View contents of a file
 
-Hello 
