@@ -1,4 +1,21 @@
 # Cloud Computing 
+- [Cloud Computing](#cloud-computing)
+  - [1. How do we know if something is in the cloud?](#1-how-do-we-know-if-something-is-in-the-cloud)
+  - [2. Differences between On-Prem and the Cloud?](#2-differences-between-on-prem-and-the-cloud)
+  - [3. The 4 Deployment Models of Cloud:](#3-the-4-deployment-models-of-cloud)
+  - [4. Types of Cloud Services:](#4-types-of-cloud-services)
+  - [5. Advantages/Disadvantages of the Cloud for Businesses:](#5-advantagesdisadvantages-of-the-cloud-for-businesses)
+    - [Advantages:](#advantages)
+    - [Disadvantages:](#disadvantages)
+  - [6. Difference Between OpEx vs CapEx:](#6-difference-between-opex-vs-capex)
+  - [7. Is migrating to the cloud always cheaper?](#7-is-migrating-to-the-cloud-always-cheaper)
+  - [8. Market Share - Cloud Trends:](#8-market-share---cloud-trends)
+  - [9. What are the 3 largest Cloud providers known for?](#9-what-are-the-3-largest-cloud-providers-known-for)
+  - [10. Which cloud provider might be the best? Why?](#10-which-cloud-provider-might-be-the-best-why)
+  - [11. What do you usually pay for in the cloud?](#11-what-do-you-usually-pay-for-in-the-cloud)
+  - [12. What are the 4 Pillars of DevOps, and how do they link into the Cloud?](#12-what-are-the-4-pillars-of-devops-and-how-do-they-link-into-the-cloud)
+- [Linux](#linux)
+  - [**Commands:**](#commands)
 
 ## 1. How do we know if something is in the cloud? 
 Cloud services are typically accessed over the internet, meaning the data or application isn't hosted locally. If you're accessing resources or apps without needing specific local hardware, it's likely cloud-based.
@@ -92,4 +109,19 @@ The best cloud provider depends on your needs:
 2. **Automation**: Cloud platforms allow for automated scaling and deployment.
 3. **Continuous Integration/Delivery**: Cloud environments facilitate seamless CI/CD pipelines.
 4. **Monitoring**: Cloud providers offer integrated monitoring tools for proactive issue detection.
-"""
+
+
+# Linux
+## **Common Commands:** 
+* `pwd`: Print working directory
+* `cd`: Change directory 
+* `ls`: List files and directories
+* `mkdir`: Create/make new directory
+* `rmdir`: Remove an empty directory 
+* `rm`: Remove files or directories 
+* `cp`: Copy files or directories 
+* `mv`: Move or rename files or directories
+* `touch`: Create a new, empty file 
+* `cat`: View contents of a file
+
+Hello 
