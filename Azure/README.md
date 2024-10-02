@@ -18,11 +18,11 @@
 ## Diagram of VM:
 
 ```plaintext
-Resource Group
+  Region
     |
     v
 +-------------------+
-|      Region       |
+| Resource Group    |
 +-------------------+
     |
     v
@@ -37,12 +37,12 @@ Resource Group
     |
     v
 +----------------------------+
-| Network Interface (NIC)     |
+| Network Interface (NIC)    |
 +----------------------------+
     |
-    +---------------------------------------------+
-    |                                             |
-    v                                             v
+    +
+    |                                             
+    v                                             
 +------------------+                     +-------------------+
 |     Public IP    |                     |        Disk       |
 +------------------+                     +-------------------+
@@ -57,14 +57,19 @@ Resource Group
     |                       |                        |
     v                       v                        v
 +-----------------+   +-------------------+   +-------------------+
-| Allow SSH Rule  |   |  Allow HTTP Rule  |   |     SSH Key        |
-| (port 22)       |   |   (port 80)       |   +-------------------+
+| Allow SSH Rule  |   |  Allow HTTP Rule  |   |     SSH Key       |
+|                 |   |                   |   +-------------------+
 +-----------------+   +-------------------+
     |
     v
-+--------------------------+
-|      Virtual Machine      |
-+--------------------------+
+   +--------------------------+      
+   |      Virtual Machine     |
+   +--------------------------+
+
+      +-------------------+
+      |     Disk          |                                +-------------------+
+
+
 ```
 
 ## Steps to Create a Virtual Network and a New SSH Key Pair in Azure

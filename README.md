@@ -61,11 +61,15 @@ Cloud services are typically accessed over the internet, meaning the data or app
 - Cost-effective
 - Access to advanced technologies
 - Less maintenance
+- Disaster recovery
+- Automatic updates 
 
 ### Disadvantages:
 - Security risks
 - Limited control
 - Ongoing costs
+- Limited control 
+- Downtime
 
 ## 6. Difference Between OpEx vs CapEx:
 - **OpEx (Operational Expenditure)**: Ongoing costs for running services (e.g., cloud subscription).
@@ -73,7 +77,10 @@ Cloud services are typically accessed over the internet, meaning the data or app
 - **Cloud**: Shifts costs from CapEx to OpEx, making costs more predictable but continuous.
 
 ## 7. Is migrating to the cloud always cheaper?
-While the cloud offers lower upfront costs, long-term costs can be higher due to recurring subscription fees, especially for large-scale operations.
+* While the cloud offers lower upfront costs, long-term costs can be higher due to recurring subscription fees, especially for large-scale operations.
+* For cloud services there are cost optimisation tools that can keep costs down. AWS has Trusted Advisor and other tools to help with this. 
+* AWS has a pay as you go model. 
+
 
 ## 8. Market Share - Cloud Trends:
 
