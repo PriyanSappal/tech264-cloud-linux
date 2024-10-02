@@ -9,13 +9,24 @@
     - [Disadvantages:](#disadvantages)
   - [6. Difference Between OpEx vs CapEx:](#6-difference-between-opex-vs-capex)
   - [7. Is migrating to the cloud always cheaper?](#7-is-migrating-to-the-cloud-always-cheaper)
-  - [8. Market Share - Cloud Trends:](#8-market-share---cloud-trends)
+  - [8. Market Share - Cloud:](#8-market-share---cloud)
   - [9. What are the 3 largest Cloud providers known for?](#9-what-are-the-3-largest-cloud-providers-known-for)
   - [10. Which cloud provider might be the best? Why?](#10-which-cloud-provider-might-be-the-best-why)
   - [11. What do you usually pay for in the cloud?](#11-what-do-you-usually-pay-for-in-the-cloud)
   - [12. What are the 4 Pillars of DevOps, and how do they link into the Cloud?](#12-what-are-the-4-pillars-of-devops-and-how-do-they-link-into-the-cloud)
 - [Linux](#linux)
-  - [**Common Commands:**](#common-commands)
+  - [**Commands:**](#commands)
+  - [What is Linux?](#what-is-linux)
+  - [Task 1: Linux - Research managing file ownership with Linux](#task-1-linux---research-managing-file-ownership-with-linux)
+  - [Task 2: Research Managing File Permissions](#task-2-research-managing-file-permissions)
+  - [Task 3: Numeric Values Assigned to File Permissions](#task-3-numeric-values-assigned-to-file-permissions)
+    - [What numeric values are assigned to each permission?](#what-numeric-values-are-assigned-to-each-permission)
+    - [What value would assign read + write permissions?](#what-value-would-assign-read--write-permissions)
+    - [What value would assign read, write, and execute permissions?](#what-value-would-assign-read-write-and-execute-permissions)
+    - [What value would assign read and execute permissions?](#what-value-would-assign-read-and-execute-permissions)
+    - [What do you think 644 would mean?](#what-do-you-think-644-would-mean)
+    - [Summary of Numeric Permissions](#summary-of-numeric-permissions)
+  - [Task 4: Research changing file permissions](#task-4-research-changing-file-permissions)
 
 ## 1. How do we know if something is in the cloud? 
 Cloud services are typically accessed over the internet, meaning the data or application isn't hosted locally. If you're accessing resources or apps without needing specific local hardware, it's likely cloud-based.
@@ -61,18 +72,18 @@ Cloud services are typically accessed over the internet, meaning the data or app
 
 ### Advantages:
 - Scalability
-- Cost-effective
+- Could be cost-effective
 - Access to advanced technologies
-- Less maintenance
+- Less maintenance of hardware
 - Disaster recovery
 - Automatic updates 
+- Guaranteed level of service
 
 ### Disadvantages:
-- Security risks
+- Security risk becaues you do not have physical control of the security
 - Limited control
 - Ongoing costs
-- Limited control 
-- Downtime
+- Downtime (can go either way)
 
 ## 6. Difference Between OpEx vs CapEx:
 - **OpEx (Operational Expenditure)**: Ongoing costs for running services (e.g., cloud subscription).
@@ -85,9 +96,9 @@ Cloud services are typically accessed over the internet, meaning the data or app
 * AWS has a pay as you go model. 
 
 
-## 8. Market Share - Cloud Trends:
+## 8. Market Share - Cloud:
 
-**Market Breakdown:**
+**Cloud Market:**
 1. AWS
 2. Microsoft Azure
 3. Google Cloud Platform
@@ -111,18 +122,18 @@ The best cloud provider depends on your needs:
 ## 11. What do you usually pay for in the cloud?
 - Storage
 - Compute power
-- Data transfer
+- Data transfer (Egress - transfer out)
 - Additional services like security, databases, and networking
 
 ## 12. What are the 4 Pillars of DevOps, and how do they link into the Cloud?
 1. **Collaboration**: Cloud enables team collaboration through shared resources.
 2. **Automation**: Cloud platforms allow for automated scaling and deployment.
 3. **Continuous Integration/Delivery**: Cloud environments facilitate seamless CI/CD pipelines.
-4. **Monitoring**: Cloud providers offer integrated monitoring tools for proactive issue detection.
+4. **Monitoring and Feedback**: Cloud providers offer integrated monitoring tools for proactive issue detection.
 
 
 # Linux
-## **Common Commands:** 
+## **Commands:** 
 * `pwd`: Print working directory
 * `cd`: Change directory 
 * `ls`: List files and directories
@@ -133,4 +144,132 @@ The best cloud provider depends on your needs:
 * `mv`: Move or rename files or directories
 * `touch`: Create a new, empty file 
 * `cat`: View contents of a file
+* `exit`: To exit 
+* `uname`: Name of OS
+* `whoami`: The admin
+* `history`: Shows a history of commands used
+* `curl`: Fetches web content, downloading files, sending data to servers etc.
+* `wget`: Downloading files
+* `file`: Outputs the file type
+* `nano`: Edits file. 
+* `head`: Shows the top of the file and you can specify how many lines
+* `tail`: Shows the bottowm of the file and you can specify how many lines
+* `nl`: Displays the number of each line in a file
+* `sudo`: Superuser do - which is to perform administative tasks
+* `apt`: It simplifies the process of installing, updating, and removing software packages
+* `su`: Superuser - to become the root user
 
+## What is Linux?
+* Clone of Unix (OS before Linux)
+* Can be run on any computer
+  
+## Task 1: Linux - Research managing file ownership with Linux
+* **Managing file ownership** is important because of system security and proper functioning in a multi-user environment. Ownership is important as it determines who can access, modify, or execute files, ensuring that sensitive files are only accessible by authorized users. Proper ownership management prevents accidental or malicious actions from unauthorized users and allows system administrators to maintain control over system resources.
+* 
+
+
+## Task 2: Research Managing File Permissions
+* **Being the owner of the file does not give you full permissions (read, write and execute)**. The owner can have any combination of these permissions, which means they might not have full permissions (read, write, execute) if those permissions were not set appropriately. For example, an owner could have only read and write permissions but not execute permission.
+* Giving permissions to the **User** entity means that those permissions apply specifically to the owner of the file. The User entity is the individual who created the file (or the one who has been assigned ownership). Permissions set for the User will determine what the owner can do with the file:
+  - **Read (r)**: The owner can view the contents of the file.
+  - **Write (w)**: The owner can modify the contents of the file.
+  - **Execute (x)**: The owner can execute the file if it is a script or program.
+* Giving permissions to the **Group** entity means that those permissions apply to all users who are members of the file's group. This allows multiple users to share access to the file without making it publicly available to everyone. Permissions for the **Group** can include:
+  - **Read (r)**: Group members can view the contents of the file.
+  - **Write (w)**: Group members can modify the contents of the file.
+  - **Execute (x)**: Group members can execute the file if it is a script or program.
+* Giving permissions to the **Other** entity means that those permissions apply to all users who are not the owner and are not part of the file's group. This is essentially the public access level. Permissions for Other can include:
+  - **Read (r)**: Any user can view the contents of the file.
+  - **Write (w)**: Any user can modify the contents of the file.
+  - **Execute (x)**: Any user can execute the file if it is a script or program.
+
+
+## Task 3: Numeric Values Assigned to File Permissions
+
+### What numeric values are assigned to each permission?
+The numeric values assigned to each permission are as follows:
+- **Read (r)**: 4
+- **Write (w)**: 2
+- **Execute (x)**: 1
+
+### What value would assign read + write permissions?
+To assign **read + write** permissions, you would add the numeric values for read and write:
+- Read (4) + Write (2) = **6**
+
+### What value would assign read, write, and execute permissions?
+To assign **read, write, and execute** permissions, you would add the numeric values for all three permissions:
+- Read (4) + Write (2) + Execute (1) = **7**
+
+### What value would assign read and execute permissions?
+To assign **read and execute** permissions, you would add the numeric values for read and execute:
+- Read (4) + Execute (1) = **5**
+
+### What do you think 644 would mean?
+In the permission representation `644`, the three digits represent the permissions for:
+- **User (Owner)**: 6 (Read + Write) - The owner has read and write permissions.
+- **Group**: 4 (Read) - The group has read permissions only.
+- **Other**: 4 (Read) - Others have read permissions only.
+
+Thus, `644` means:
+- The owner can read and write the file.
+- Group members can only read the file.
+- Other users can only read the file.
+
+### Summary of Numeric Permissions
+
+| Permission | Numeric Value |
+|------------|---------------|
+| Read       | 4             |
+| Write      | 2             |
+| Execute    | 1             |
+
+| Combined Permissions | Numeric Value |
+|---------------------|---------------|
+| Read + Write        | 6             |
+| Read + Write + Execute | 7          |
+| Read + Execute      | 5             |
+
+| Mode/Permissions | Meaning                    |
+|------------------|---------------------------|
+| 644              | Owner: rw- (read/write), Group: r-- (read), Other: r-- (read) |
+
+## Task 4: Research changing file permissions
+* `chmod`: This command changes file permissions. 
+* To change the permissions on a file, the end user must be: 
+    1. The owner
+    2. A user with su privileges (su - super user) 
+
+a. Set User to read, Group to read + write + execute, and Other to read and write only
+- Using symbolic notation:
+```bash
+chmod u=r,g=rwX,o=rw testfile.txt
+```
+- Using numeric values:
+```bash
+chmod 664 testfile.txt
+```
+
+b. Add execute permissions (to all entities)
+- Using symbolic notation:
+```bash
+chmod a+x testfile.txt
+```
+- Using numeric values (if starting from `664`):
+```bash
+chmod 775 testfile.txt
+```
+
+c. Take write permissions away from Group
+- Using symbolic notation:
+```bash
+chmod g-w testfile.txt
+```
+- Using numeric values (if starting from `775`):
+```bash
+chmod 755 testfile.txt
+```
+
+Use numeric values to give read + write access to User, read access to Group, and no access to Other
+```bash
+chmod 640 testfile.txt
+```
