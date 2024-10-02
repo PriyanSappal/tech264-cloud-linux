@@ -164,24 +164,47 @@ The best cloud provider depends on your needs:
 * Can be run on any computer
   
 ## Task 1: Linux - Research managing file ownership with Linux
-* **Managing file ownership** is important because of system security and proper functioning in a multi-user environment. Ownership is important as it determines who can access, modify, or execute files, ensuring that sensitive files are only accessible by authorized users. Proper ownership management prevents accidental or malicious actions from unauthorized users and allows system administrators to maintain control over system resources.
-* 
-
+* **Managing file ownership** is important because of system security and proper functioning in a multi-user environment. 
+* Ownership is important as it determines who can access, modify, or execute files, ensuring that sensitive files are only accessible by authorized users. 
+* Proper ownership management prevents accidental or malicious actions from unauthorized users and allows system administrators to maintain control over system resources.
+* Command to view file ownership is:
+`ls -l`. 
+* File and directories have default permissions when they are created.
+  * **Files**: Read and write for owner and group. Read-only for others. 
+  * **Groups**: Read, write and execute for owners and groups. Read and write for others.  
+* The created file belongs to 
+  1. The user who created it  
+  2. The group associated with that user. 
+* The owner does not receive execute (X) permissions when creating files because, for security reasons, executable permissions are not typically granted automatically for newly created files. This prevents potentially harmful scripts or binaries from being executed unintentionally.
+* Command to change the owner of a file/directory is: `chown`
 
 ## Task 2: Research Managing File Permissions
 * **Being the owner of the file does not give you full permissions (read, write and execute)**. The owner can have any combination of these permissions, which means they might not have full permissions (read, write, execute) if those permissions were not set appropriately. For example, an owner could have only read and write permissions but not execute permission.
+  
 * Giving permissions to the **User** entity means that those permissions apply specifically to the owner of the file. The User entity is the individual who created the file (or the one who has been assigned ownership). Permissions set for the User will determine what the owner can do with the file:
   - **Read (r)**: The owner can view the contents of the file.
   - **Write (w)**: The owner can modify the contents of the file.
   - **Execute (x)**: The owner can execute the file if it is a script or program.
+  
 * Giving permissions to the **Group** entity means that those permissions apply to all users who are members of the file's group. This allows multiple users to share access to the file without making it publicly available to everyone. Permissions for the **Group** can include:
   - **Read (r)**: Group members can view the contents of the file.
   - **Write (w)**: Group members can modify the contents of the file.
   - **Execute (x)**: Group members can execute the file if it is a script or program.
+  
 * Giving permissions to the **Other** entity means that those permissions apply to all users who are not the owner and are not part of the file's group. This is essentially the public access level. Permissions for Other can include:
   - **Read (r)**: Any user can view the contents of the file.
   - **Write (w)**: Any user can modify the contents of the file.
   - **Execute (x)**: Any user can execute the file if it is a script or program.
+* If the User (**Owner**) permissions: Read-only (r--), **Group** permissions: Read and write (rw-), and **Other** permissions: Read, write, and execute (rwx)
+As the owner of the file, you will have the following permissions:
+
+Read-only: You can read the contents of the file but cannot modify it or execute it since execute permissions are not set.
+
+* `-rwxr-xr-- 1 tcboony staff  123 Nov 25 18:36 keeprunning.sh`:
+    - `-` : Indicates that this is a regular file (not a directory).
+    - `rwx` : The owner (tcboony) has read, write, and execute permissions.
+    - `r-x` : The group (staff) has read and execute permissions but no write permission.
+    - `r--` : Others have read permission only.
 
 
 ## Task 3: Numeric Values Assigned to File Permissions
@@ -254,7 +277,7 @@ b. Add execute permissions (to all entities)
 ```bash
 chmod a+x testfile.txt
 ```
-- Using numeric values (if starting from `664`):
+- Using numeric values (if starting from `775`):
 ```bash
 chmod 775 testfile.txt
 ```
@@ -264,7 +287,7 @@ c. Take write permissions away from Group
 ```bash
 chmod g-w testfile.txt
 ```
-- Using numeric values (if starting from `775`):
+- Using numeric values (if starting from `755`):
 ```bash
 chmod 755 testfile.txt
 ```
