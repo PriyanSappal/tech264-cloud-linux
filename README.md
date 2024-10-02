@@ -1,5 +1,5 @@
-# Cloud Computing 
-- [Cloud Computing](#cloud-computing)
+# Cloud Computing and Linux
+- [Cloud Computing and Linux](#cloud-computing-and-linux)
   - [1. How do we know if something is in the cloud?](#1-how-do-we-know-if-something-is-in-the-cloud)
   - [2. Differences between On-Prem and the Cloud?](#2-differences-between-on-prem-and-the-cloud)
   - [3. The 4 Deployment Models of Cloud:](#3-the-4-deployment-models-of-cloud)
@@ -31,10 +31,10 @@ Cloud services are typically accessed over the internet, meaning the data or app
 | Physical proximity to resources. | Accessible from anywhere with internet access. |
 
 ## 3. The 4 Deployment Models of Cloud: 
-- **Private Cloud**: Dedicated to a single organization, offering enhanced control and security.
+- **Private Cloud**: Dedicated to a single organization, offering enhanced control and security. Can be run without internet (on a cruise ship). 
 - **Public Cloud**: Services provided over the internet and shared across multiple users.
-- **Hybrid Cloud**: A mix of private and public clouds, offering flexibility.
-- **Multi-Cloud**: Use of multiple cloud services from different providers.
+- **Hybrid Cloud**: A mix of private and public clouds, offering flexibility. This allows businesses to maintain private data on-prem while leveraging cloud for scalability. Some data needs to stay on-prem because of compliance reasons (private user data). 
+- **Multi-Cloud**: Use of multiple cloud services from different providers. May use this because of redundancy (having backups - this is common in the finance sector). 
 
 | Deployment Model | Description |
 | ---------------- | ----------- |
@@ -47,6 +47,9 @@ Cloud services are typically accessed over the internet, meaning the data or app
 - **IaaS (Infrastructure as a Service)**: Provides virtualized computing resources over the internet.
 - **PaaS (Platform as a Service)**: Offers hardware and software tools over the internet, typically for app development.
 - **SaaS (Software as a Service)**: Delivers software applications via the internet, accessible through a browser.
+  
+
+![alt text](image.png)
 
 | Service Type | Example | Description |
 | ------------ | ------- | ----------- |
