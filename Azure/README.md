@@ -21,6 +21,13 @@
   - [--\> Tags](#---tags)
   - [--\> Review and Create](#---review-and-create)
 - [Connecting Your Virtual Machine](#connecting-your-virtual-machine)
+  - [Intro to Azure](#intro-to-azure)
+    - [The Basics of Azure:](#the-basics-of-azure)
+  - [Regions and Availability Zones](#regions-and-availability-zones)
+  - [Services](#services)
+  - [Accessing Azure](#accessing-azure)
+  - [Azure vs. Azure DevOps](#azure-vs-azure-devops)
+  - [Why use the Azure Pricing Calculator:](#why-use-the-azure-pricing-calculator)
 
 
 ## Diagram of VM:
@@ -75,9 +82,7 @@
    +--------------------------+
 
       +-------------------+
-      |     Disk          |                                +-------------------+
-
-
+      |     Disk          |                                       +-------------------+
 ```
 
 ## Steps to Create a Virtual Network and a New SSH Key Pair in Azure
@@ -207,3 +212,48 @@ Make sure all your details are correct.
 6. Paste this code into your **GitBash**.
 7. A **warning** will come out once entered into your **GitBash**. Respond with `yes` and then it will permanently save the IP address, meaning we will not be given the warning again.
 8. You can type `exit` to **logout** of the Virtual Machine.
+
+## Intro to Azure
+### The Basics of Azure:
+* **Azure** is a cloud computing platform by Microsoft. It provides on-demand access to computing resources like servers, storage, and networking. Think of it as renting a computer in the cloud. You only pay for what you use.
+
+* Key benefits:
+    * **Scalability**: Easily adjust resources as needed.
+    * **Flexibility**: Choose from a wide range of services to best fit your needs.
+    * **Reliability**: Powered by Microsoft's global infrastructure.
+    * **Cost-efficiency**: Pay-as-you-go pricing.
+
+## Regions and Availability Zones
+* Azure regions are geographical locations where Microsoft operates data centers. Each region is physically isolated and has multiple data centers within it. This redundancy ensures that Azure services remain available even if a data center experiences a failure.
+* Azure availability zones are distinct physical locations within a region that are isolated from each other. Each availability zone has its own power, networking, and cooling infrastructure. This provides a higher level of fault tolerance and disaster recovery.
+
+![AZ and Region](image.png)
+
+## Services 
+- **Compute**: Virtual machines, Azure Functions, App Service, Kubernetes Service, and more.
+- **Storage**: Blob storage, file storage, disk storage, and database storage.
+- **Networking**: Virtual networks, load balancers, DNS, and VPN.
+- **Databases**: SQL Database, Cosmos DB, Redis Cache, and more.
+- **Analytics**: Azure Data Factory, Azure Synapse Analytics, Power BI, and more.
+- **AI and machine learning**: Azure Machine Learning, Azure Cognitive Services, and more.
+- **IoT**: Azure IoT Hub, Azure IoT Central, and more.
+
+## Accessing Azure
+
+- **Azure portal**: A web-based interface that allows you to manage your Azure resources.
+- **Azure CLI**: A command-line interface that provides programmatic access to Azure.
+- **Azure PowerShell**: A scripting language that allows you to automate Azure tasks.
+- **Azure Mobile App**: A mobile app that provides basic management capabilities.
+
+## Azure vs. Azure DevOps
+
+* Azure is a cloud computing platform that provides a wide range of services, such as virtual machines, storage, networking, and databases.
+
+* Azure DevOps is a set of development tools that help teams collaborate and deliver software. It includes features such as CI/CD pipelines, version control, work item tracking, build and release management, and testing.
+
+## Why use the Azure Pricing Calculator:
+
+- **Cost estimation**: Determine the cost of your Azure resources before deploying them.
+- **Budget planning**: Create a budget for your Azure usage.
+- **Cost optimization**: Identify opportunities to reduce your Azure costs.
+- **Scenario planning**: Test different scenarios and configurations to find the most cost-effective solution.
