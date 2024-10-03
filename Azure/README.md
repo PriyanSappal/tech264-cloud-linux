@@ -20,10 +20,11 @@
   - [--\> Networking](#---networking)
   - [--\> Tags](#---tags)
   - [--\> Review and Create](#---review-and-create)
-- [Connecting Your Virtual Machine](#connecting-your-virtual-machine)
-  - [Intro to Azure](#intro-to-azure)
+  - [Connecting Your Virtual Machine](#connecting-your-virtual-machine)
+- [Intro to Azure](#intro-to-azure)
     - [The Basics of Azure:](#the-basics-of-azure)
   - [Regions and Availability Zones](#regions-and-availability-zones)
+  - [Structure of Azure:](#structure-of-azure)
   - [Services](#services)
   - [Accessing Azure](#accessing-azure)
   - [Azure vs. Azure DevOps](#azure-vs-azure-devops)
@@ -80,10 +81,10 @@
    +--------------------------+      
    |      Virtual Machine     |
    +--------------------------+
-
-      +-------------------+
-      |     Disk          |                                       +-------------------+
-```
++-------------------+ 
+|      Disk         |                     
++-------------------+                                                                               
+``` 
 
 ## Steps to Create a Virtual Network and a New SSH Key Pair in Azure
 
@@ -95,10 +96,7 @@ A Virtual Network (VNet) in Azure allows resources like virtual machines (VMs), 
 ### Steps to Create a Virtual Network
 
 1. **Log in to Azure Portal:**   - Go to the [
-Azure Portal
-](
-https://portal.azure.com
-).   - Sign in with your Azure account credentials. 
+Azure Portal](https://portal.azure.com).   - Sign in with your Azure account credentials. 
 2. **Create a New Resource Group:**   - Navigate to "Resource Groups" from the left-hand menu.   - Click on `+ Create`.   - Fill in the necessary details (like subscription, resource group name, and region).   - Click `Review + Create`, then `Create`. 
 3. **Create the Virtual Network:**   - Go to "Virtual Networks" in the Azure Portal.   - Click create
 at the top of the page.    
@@ -203,7 +201,7 @@ Select `Owner : (your name)`.
 Make sure all your details are correct.
 
 
-# Connecting Your Virtual Machine
+## Connecting Your Virtual Machine
 1. **Start** your virtual machine.
 2. Navigate to "Connect" under your VM.
 3. Find "Native SSH" and **select** it. A side panel should open.
@@ -213,7 +211,7 @@ Make sure all your details are correct.
 7. A **warning** will come out once entered into your **GitBash**. Respond with `yes` and then it will permanently save the IP address, meaning we will not be given the warning again.
 8. You can type `exit` to **logout** of the Virtual Machine.
 
-## Intro to Azure
+# Intro to Azure
 ### The Basics of Azure:
 * **Azure** is a cloud computing platform by Microsoft. It provides on-demand access to computing resources like servers, storage, and networking. Think of it as renting a computer in the cloud. You only pay for what you use.
 
@@ -224,10 +222,25 @@ Make sure all your details are correct.
     * **Cost-efficiency**: Pay-as-you-go pricing.
 
 ## Regions and Availability Zones
-* Azure regions are geographical locations where Microsoft operates data centers. Each region is physically isolated and has multiple data centers within it. This redundancy ensures that Azure services remain available even if a data center experiences a failure.
-* Azure availability zones are distinct physical locations within a region that are isolated from each other. Each availability zone has its own power, networking, and cooling infrastructure. This provides a higher level of fault tolerance and disaster recovery.
+* Azure **regions** are geographical locations where Microsoft operates data centers. Each region is physically isolated and has multiple data centers within it. This redundancy ensures that Azure services remain available even if a data center experiences a failure.
+* Azure **availability zones** are distinct physical locations within a region that are isolated from each other. Each availability zone has its own power, networking, and cooling infrastructure. This provides a higher level of fault tolerance and disaster recovery.
 
-![AZ and Region](image.png)
+![AZ and Region](../images/image.png)
+* ![AZ and Region](https://holori.com/list-of-all-azure-regions-and/#azure-regions)
+ 
+
+## Structure of Azure:
+
+For the below they use a different scope and at each level you can set access and policies:
+
+- **Resource Groups**: Logical containers that hold related Azure resources, allowing for grouped management, monitoring, and lifecycle control.
+- **Subscriptions**: Type of payment account. Organise resources and resource groups under a single billing account, with separate quotas, environments, and cost management. There may be limits/quotas e.g. 50x VMs (same size and same region).
+- **Managment Groups**: Hierarchically organise multiple subscriptions, applying policies and controls across subscriptions for streamlined governance and compliance.
+- **Root Management Group**: Azure Entra - All the user accounts and permissions are stored. 
+
+It is dependent on what level you are and then you can manage downwards. 
+
+![Structure-of-Azure](../images/Structure-of-azure.png)
 
 ## Services 
 - **Compute**: Virtual machines, Azure Functions, App Service, Kubernetes Service, and more.
@@ -239,6 +252,7 @@ Make sure all your details are correct.
 - **IoT**: Azure IoT Hub, Azure IoT Central, and more.
 
 ## Accessing Azure
+All the ways below interact with the ARM (Azure Resource Manager) api.
 
 - **Azure portal**: A web-based interface that allows you to manage your Azure resources.
 - **Azure CLI**: A command-line interface that provides programmatic access to Azure.
@@ -247,9 +261,9 @@ Make sure all your details are correct.
 
 ## Azure vs. Azure DevOps
 
-* Azure is a cloud computing platform that provides a wide range of services, such as virtual machines, storage, networking, and databases.
+* **Azure** is a cloud computing platform that provides a wide range of services, such as virtual machines, storage, networking, and databases.
 
-* Azure DevOps is a set of development tools that help teams collaborate and deliver software. It includes features such as CI/CD pipelines, version control, work item tracking, build and release management, and testing.
+* **Azure DevOps** is a set of development tools that help teams collaborate and deliver software and runs as a separate ecosystem. It includes features such as CI/CD pipelines, version control, work item tracking, build and release management, and testing.
 
 ## Why use the Azure Pricing Calculator:
 

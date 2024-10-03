@@ -27,6 +27,10 @@
     - [What do you think 644 would mean?](#what-do-you-think-644-would-mean)
     - [Summary of Numeric Permissions](#summary-of-numeric-permissions)
   - [Task 4: Research changing file permissions](#task-4-research-changing-file-permissions)
+- [Making a bash script](#making-a-bash-script)
+  - [How to make ta script and run it](#how-to-make-ta-script-and-run-it)
+  - [Environment Variables](#environment-variables)
+    - [Setting up an Environment variables](#setting-up-an-environment-variables)
 
 ## 1. How do we know if something is in the cloud? 
 Cloud services are typically accessed over the internet, meaning the data or application isn't hosted locally. If you're accessing resources or apps without needing specific local hardware, it's likely cloud-based.
@@ -275,7 +279,7 @@ chmod 664 testfile.txt
 b. Add execute permissions (to all entities)
 - Using symbolic notation:
 ```bash
-chmod a+x testfile.txt
+chmod +x testfile.txt
 ```
 - Using numeric values (if starting from `775`):
 ```bash
@@ -296,3 +300,50 @@ Use numeric values to give read + write access to User, read access to Group, an
 ```bash
 chmod 640 testfile.txt
 ```
+# Making a bash script
+## How to make ta script and run it
+* Need to make a `.sh` file and add the following (you can do this by simply running `nano <file-name>` - use `Ctrl + S` and `Ctrl + X` to save and exit). 
+* The `#!/bin/bash` needs to be included for every bash script. 
+```bash
+#!/bin/bash 
+
+# update
+sudo apt update -y
+
+# upgrade
+sudo apt upgrade -y
+
+# install nginx
+sudo apt install nginx -y
+
+# restart nginx
+sudo systemctl restart nginx
+
+# enable nginx - to automatically start when we startup VM
+sudo systemctl enable nginx
+```
+* To check the status: `sudo systemctl status nginx`
+* In order to run this script you would need to change the permissions of the file that has that bash script: `chmod +x <file-name>` this would add the execute. 
+* If you follow those steps above, it should allow you to run the script: `./<file-name>`
+
+## Environment Variables 
+* A value in memory that is available to any tool that wants to look up those values.
+* An **environment variable** is a dynamic **variable** stored in a process environment. It is used to**pass**configuration information and settings to processes running in the system. These **variables** can influence the behavior of software and system components by providing information such as paths, user preferences, and system settings.
+  
+### Setting up an Environment variables
+
+* `printenv` to output the environment variables (you can specify in CAPS what environment variable)
+* To set a **variable**, we can use `VARIABLENAME=data`. This is a **shell variable**. To ensure this worked, we could use `echo $VARIABLENAME`, which would then output the `data` value. **Note** that this is
+**NOT** the same as an **enviornment variable**.
+* To set an environment variable: 
+    * `export` to set an environment value (e.g. `export MYNAME=priyan`)
+    * If we were to set our **environment variable** inside of the hidden `.bashrc`, it would be visible to the user (admin) across sessions, making it **persistent**. **Note** that `.bashrc` is unique to the user. We can do this by using `nano .bashrc` and writing `export VARIABLENAME=data` in the file.
+    * `echo "export MYNAME=priyan_is_persistent" >> .bashrc` adding this to the .bashrc file will set it as an environment variable. 
+* `ps` - to check user processes, `ps aux` - to check a lot of processes. 
+* `top` - to check CPU usage, `Ctrl + M` for memory, `Ctrl + N` for descending order of PID, `Ctrl + P` to go back to the CPU usage.
+* `sleep 3` to sleep for 3 seconds in the foreground - To stop this `Ctrl + Z` or `Ctrl + C`. 
+* `sleep 5000 &` (this will give you an Process ID output) to tick in the background and not engage the terminal - To stop this `kill -1 <PID>` (`PID`: Process ID) (64 kill signals and -1 is the lightest). 
+* `kill <PID>` can be used on its own and is the same as `-15` (default - terminate).
+* `kill -9 <PID>` is for brute force kill but this can leave zombie instances (instances still running in the memory with no parent process that can manage it and then needs to be manually killed). 
+ 
+ 
