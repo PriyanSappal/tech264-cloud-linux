@@ -328,7 +328,7 @@ sudo systemctl enable nginx
 
 ## Environment Variables 
 * A value in memory that is available to any tool that wants to look up those values.
-* An **environment variable** is a dynamic **variable** stored in a process environment. It is used to**pass**configuration information and settings to processes running in the system. These **variables** can influence the behavior of software and system components by providing information such as paths, user preferences, and system settings.
+* An **environment variable** is a dynamic **variable** stored in a process environment. It is used to **pass** configuration information and settings to processes running in the system. These **variables** can influence the behavior of software and system components by providing information such as paths, user preferences, and system settings. We want a certain value returned. 
   
 ### Setting up an Environment variables
 
