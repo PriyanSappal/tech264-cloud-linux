@@ -31,6 +31,11 @@
   - [How to make ta script and run it](#how-to-make-ta-script-and-run-it)
   - [Environment Variables](#environment-variables)
     - [Setting up an Environment variables](#setting-up-an-environment-variables)
+- [Deleting Your Virtual Machine](#deleting-your-virtual-machine)
+- [Virtual machine - Deploy Sparta App](#virtual-machine---deploy-sparta-app)
+  - [How to get a folder into your VM](#how-to-get-a-folder-into-your-vm)
+  - [Install MongoDB on Ubuntu 22.04](#install-mongodb-on-ubuntu-2204)
+- [Making a Database in Azure - MongoDB](#making-a-database-in-azure---mongodb)
 
 ## 1. How do we know if something is in the cloud? 
 Cloud services are typically accessed over the internet, meaning the data or application isn't hosted locally. If you're accessing resources or apps without needing specific local hardware, it's likely cloud-based.
@@ -190,7 +195,7 @@ The best cloud provider depends on your needs:
   - **Write (w)**: The owner can modify the contents of the file.
   - **Execute (x)**: The owner can execute the file if it is a script or program.
   
-* Giving permissions to the **Group** entity means that those permissions apply to all users who are members of the file's group. This allows multiple users to share access to the file without making it publicly available to everyone. Permissions for the **Group** can include:
+* Giving permissions to the **Group** entity means that those permissions apply to all users who are members of the file's group. This allows multiple users to share access to the file without making it publicly available to everyone. Usually it is the Group that the owner belongs to. Permissions for the **Group** can include:
   - **Read (r)**: Group members can view the contents of the file.
   - **Write (w)**: Group members can modify the contents of the file.
   - **Execute (x)**: Group members can execute the file if it is a script or program.
@@ -346,4 +351,166 @@ sudo systemctl enable nginx
 * `kill <PID>` can be used on its own and is the same as `-15` (default - terminate).
 * `kill -9 <PID>` is for brute force kill but this can leave zombie instances (instances still running in the memory with no parent process that can manage it and then needs to be manually killed). 
  
+ # Deleting Your Virtual Machine
+1. Navigate to overview.
+2. Find your resource group.
+3. Filter your name. You will see multiple items appear.
+4. Tick `resourcegroupname-name-vmname`
+5. Tick `resourcegroupname-vmname-ip`
+6. Tick `resourcegroupname-vmname-nsg`
+7. Tick `resourcegroupname-name-networkinterface`
+8. Tick `resourcegroupname-name-Disk`
+9. Locate **delete**. Avoid deleting the **resource group**.
+10. Tick "Apply force delete" just to be safe.
+11. Enter "delete" in the input box and click **delete**.
+12. Select **delete** once more to confirm **deletion**.
  
+We leave the Virtual Network and SSH Key as they can be reused.
+
+# Virtual machine - Deploy Sparta App 
+* Once you have used the ssh key to log in on Git bash. Run the following: `sudo apt-get update -y` and `sudo apt-get upgrade -y`. 
+* BE CAREFUL! On 22.04 Ubuntu, it will still ask for user input. Use `sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y` instead. 
+* `sudo DEBIAN_FRONTEND=noninteractive apt-get install nginx -y` to install nginx. 
+* `curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&\
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs` to install nodejs.
+* The `DEBIAN_FRONTEND=noninteractive` before the `apt-get` because it removes the need for user input. 
+
+* Use `nano prov-app.sh` and input the below. 
+``` bash
+#!/bin/bash
+
+echo update sources list...
+sudo apt-get update -y
+echo DONE!
+
+echo upgrade any packages available...
+sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+echo DONE!
+
+echo install nginx...
+sudo DEBIAN_FRONTEND=noninteractive apt-get install nginx -y
+echo DONE!
+
+echo install nodejs vs20...
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&\
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
+echo Done!
+
+echo check nodejs version...
+node -v
+echo Done!
+```
+* To run this you would need to run this `./prov-app.sh`
+
+## How to get a folder into your VM 
+1. Run `scp -i ~/.ssh/tech264-priyan-az-key -r "C:\Users\Priyan\Downloads\app" adminuser@<public-ip>:~/` in your git bash terminal. 
+2. SSH back into the VM `ssh -i ~/.ssh/tech264-priyan-az-key adminuser@20.162.221.60`.
+3. Check if the `app` folder is there and `cd` into that folder
+4. Run `npm install` and `npm start`
+5. How to add a port:
+   1. Navigate to your VM's **network settings**.
+   2. Open up **Settings** and click **inbound security rules**.
+   3. Change the **destination port** to `3000`.
+   4. Change protocol to **TCP**.
+   5. Change the priority. The **lower** the priority, the **higher** the priority.
+6. Search your public-ip:3000.
+
+
+## Install MongoDB on Ubuntu 22.04
+Steps: 
+# Making a Database in Azure - MongoDB
+ 
+`sudo apt-get install gnupg curl` :
+- `gnupg` : This is the GNU Privacy Guard, a tool for encrypting files and managing keys. It's often used for securely managing software repositories, verifying signatures, and other cryptographic functions.
+ 
+1. Download PGP:
+``` bash
+curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
+   sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+   --dearmor
+```
+This command downloads the PGP (Pretty Good Privacy) public key for MongoDB version 7.0 and converts it to a .gpg file format using gpg. The resulting key is then stored in /usr/share/keyrings/ for use in authenticating MongoDB packages during installation. It ensures the packages are coming from a trusted source.
+ 
+2. Register MongoDB to the system:
+``` bash
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list`
+```
+This command registers the MongoDB 7.0 repository to your system, ensuring that MongoDB packages will be fetched from the official source and verified with the correct GPG key during installation.
+ 
+3. Run update:
+``` bash
+sudo DEBIAN_FRONTEND=noninteractive apt update -y
+```
+Running sudo apt update is necessary to update the package lists from all configured repositories.
+ 
+4. Install MongoDB components:
+``` bash
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mongodb-org=7.0.6 mongodb-org-database=7.0.6 mongodb-org-server=7.0.6 mongodb-mongosh=2.1.5 mongodb-org-mongos=7.0.6 mongodb-org-tools=7.0.6
+```
+This command installs specific versions of MongoDB components (version 7.0.6 for MongoDB and 2.1.5 for the MongoDB shell) in a non-interactive mode.
+ 
+5. Status check:
+``` bash
+sudo systemctl status mongod
+```
+Check the status of mongod. It will not be active.
+ 
+6. Start up:
+``` bash
+sudo systemctl start mongod
+```
+Starts mongod. If you then re-run status, it will read as active.
+ 
+7. Change bindIp:
+``` bash
+sudo nano /etc/mongo.conf
+```
+Nanos into the mongo configuration file and locate `bindIp`. Replace whatever is there with `0.0.0.0`. Allows connections from any IP.
+ 
+8. Restart:
+``` bash
+sudo systemctl restart mongod
+```
+This applies the changes we made in the config file.
+ 
+9. Check if it's enabled:
+``` bash
+sudo systemctl is-enabled mongod
+```
+It should read as disabled, so we will enable it.
+ 
+10. Enable it:
+``` bash
+sudo systemctl enable mongod
+```
+This will enable MongoDB, which then should be enabled on our VMs whenever we boot it up.
+These are the above commands:
+
+* `sudo apt-get install gnupg curl`
+* `curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
+   sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+   --dearmor`
+* Create a sources list file: `echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list`
+* Then run `sudo apt-get update -y`.
+* `sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mongodb-org=7.0.6 mongodb-org-database=7.0.6 mongodb-org-server=7.0.6 mongodb-mongosh=2.1.5 mongodb-org-mongos=7.0.6 mongodb-org-tools=7.0.6`
+* `sudo systemctcl start mongod`: to start mongoDB and use `sudo systemctcl status mongod` to check if it is running. 
+* `sudo nano /etc/mongod.conf`: editing the mongo file configuration. Change the bindIP to `0.0.0.0` (this accepts any IP address): 
+``` bash
+# network interfaces
+net:
+  port: 27017
+  bindIp: 0.0.0.0
+```
+* `sudo systemctl enable mongod` to enable mongo. 
+* `sudo systemctl is-enabled mongod` to check. 
+
+Now we need to make an environment variable to link the database to the app. 
+* `export DB_HOST=mongodb://10.0.3.4:27017/posts`: put this into the VM for the app. This will make the env variable. 
+* print it to the screen `printenv DB_HOST`
+* Then use the `npm install` and `npm start`. Then input the ip address with the port and /posts. e.g. `http://20.162.221.60:3000/posts`
+* JUST IN CASE: If it is not populated with data then use `seeds.js`
+ 
+
+
+
+
