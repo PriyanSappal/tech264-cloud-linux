@@ -36,6 +36,34 @@
   - [How to get a folder into your VM](#how-to-get-a-folder-into-your-vm)
   - [Install MongoDB on Ubuntu 22.04](#install-mongodb-on-ubuntu-2204)
 - [Making a Database in Azure - MongoDB](#making-a-database-in-azure---mongodb)
+  - [Task: Get the 'app' folder onto the Azure VM using "git"](#task-get-the-app-folder-onto-the-azure-vm-using-git)
+  - [Nginx Reverse Proxy Setup](#nginx-reverse-proxy-setup)
+    - [1. Install Nginx](#1-install-nginx)
+    - [For Ubuntu/Debian:](#for-ubuntudebian)
+    - [2. Configure Nginx as a Reverse Proxy](#2-configure-nginx-as-a-reverse-proxy)
+    - [Open the Nginx configuration file:](#open-the-nginx-configuration-file)
+    - [Add Reverse Proxy Configuration:](#add-reverse-proxy-configuration)
+    - [Save and exit the file.](#save-and-exit-the-file)
+    - [3. Test the Nginx Configuration](#3-test-the-nginx-configuration)
+    - [5. Restart Nginx](#5-restart-nginx)
+    - [6. Check](#6-check)
+  - [Task: How many services can use a port?](#task-how-many-services-can-use-a-port)
+    - [Objective](#objective)
+    - [Step 1: Run the Sparta App](#step-1-run-the-sparta-app)
+    - [Step 2: Open a Second Terminal and Run the App](#step-2-open-a-second-terminal-and-run-the-app)
+      - [Expected Error](#expected-error)
+    - [Explanation of the Error](#explanation-of-the-error)
+    - [Step 3: Fixing the Error](#step-3-fixing-the-error)
+    - [Option 1: Change the Port Number](#option-1-change-the-port-number)
+    - [Option 2: Kill the Existing Process Using Port 3000](#option-2-kill-the-existing-process-using-port-3000)
+    - [Step 4: Finding the Process Using Port 3000](#step-4-finding-the-process-using-port-3000)
+    - [Linux Command:](#linux-command)
+    - [Example Output](#example-output)
+    - [Step 5: Killing the Process](#step-5-killing-the-process)
+  - [Task: Run Sparta app in the background](#task-run-sparta-app-in-the-background)
+  - [Work out ways to both run, stop and re-start the app in the background (besides using the "\&" at the end of the command):](#work-out-ways-to-both-run-stop-and-re-start-the-app-in-the-background-besides-using-the--at-the-end-of-the-command)
+    - [One way should use pm2](#one-way-should-use-pm2)
+    - [If time: One other way (can you find another package manager do it like pm2?)](#if-time-one-other-way-can-you-find-another-package-manager-do-it-like-pm2)
 
 ## 1. How do we know if something is in the cloud? 
 Cloud services are typically accessed over the internet, meaning the data or application isn't hosted locally. If you're accessing resources or apps without needing specific local hardware, it's likely cloud-based.
@@ -66,7 +94,7 @@ Cloud services are typically accessed over the internet, meaning the data or app
 ## 4. Types of Cloud Services:
 - **IaaS (Infrastructure as a Service)**: Provides virtualized computing resources over the internet.
 - **PaaS (Platform as a Service)**: Offers hardware and software tools over the internet, typically for app development.
-- **SaaS (Software as a Service)**: Delivers software applications via the internet, accessible through a browser.
+- **SaaS (Software as a Service)**: Delivers software applications via the internet, accessible through a browser. **Data is managed by you.**
   
 
 ![alt text](image.png)
@@ -413,16 +441,16 @@ echo Done!
    3. Change the **destination port** to `3000`.
    4. Change protocol to **TCP**.
    5. Change the priority. The **lower** the priority, the **higher** the priority.
-6. Search your public-ip:3000.
+6. Search your public-ip and add `:3000`.
 
 
 ## Install MongoDB on Ubuntu 22.04
 Steps: 
 # Making a Database in Azure - MongoDB
- 
+
 `sudo apt-get install gnupg curl` :
 - `gnupg` : This is the GNU Privacy Guard, a tool for encrypting files and managing keys. It's often used for securely managing software repositories, verifying signatures, and other cryptographic functions.
- 
+
 1. Download PGP:
 ``` bash
 curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
@@ -479,7 +507,7 @@ sudo systemctl is-enabled mongod
 ```
 It should read as disabled, so we will enable it.
  
-10. Enable it:
+10.  Enable it:
 ``` bash
 sudo systemctl enable mongod
 ```
@@ -504,13 +532,459 @@ net:
 * `sudo systemctl enable mongod` to enable mongo. 
 * `sudo systemctl is-enabled mongod` to check. 
 
-Now we need to make an environment variable to link the database to the app. 
+Now we need to make an environment variable to link the database to the app - this needs to be on the app VM. 
 * `export DB_HOST=mongodb://10.0.3.4:27017/posts`: put this into the VM for the app. This will make the env variable. 
 * print it to the screen `printenv DB_HOST`
 * Then use the `npm install` and `npm start`. Then input the ip address with the port and /posts. e.g. `http://20.162.221.60:3000/posts`
 * JUST IN CASE: If it is not populated with data then use `seeds.js`
+
+## Task: Get the 'app' folder onto the Azure VM using "git"
+
+* `git clone <url>`
+
+``` bash 
+#!/bin/bash
+
+# Check for updates
+echo "update sources list..."
+sudo apt update -y
+echo "update complete"
+
+# Upgrades those checks
+echo "upgrade any packages available..."
+sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
+echo "upgrade complete"
+
+# Install nginx
+sudo apt install -y nginx
+echo "nginx installed"
+
+echo "install nodejs v20..."
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&\
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
+
+echo "check nodejs version..."
+node -v
+echo "nodejs v20 installed"
+
+# Cloning Git repo and calling it repo
+echo "Clone Git folder"
+git clone https://github.com/PriyanSappal/tech264-sparta-app.git repo
+echo "Cloned tech264-sparta-app"
+
+echo "Change directory to app"
+cd repo/app
+echo "In app directory"
+
+echo "install and run"
+npm install
+npm start &
+```
+
+This is the DB script:
+
+``` bash 
+#!/bin/bash
+
+# Check for updates
+echo "update sources list..."
+sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
+echo "update complete"
+
+# Upgrade available packages
+echo "upgrade any packages available..."
+sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+echo "upgrade complete"
+
+# Install gnupg and curl
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y gnupg curl
+
+# Add MongoDB GPG key for version 7.0
+curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
+   sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
+
+# Add MongoDB repository (fixed path issue)
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+
+# Update package list again after adding the MongoDB repo
+sudo DEBIAN_FRONTEND=noninteractive apt update -y
+
+# Install MongoDB version 7.0.6 with its components
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mongodb-org=7.0.6 mongodb-org-database=7.0.6 mongodb-org-server=7.0.6 mongodb-mongosh=2.1.5 mongodb-org-mongos=7.0.6 mongodb-org-tools=7.0.6
+
+# Start MongoDB
+sudo systemctl start mongod
+
+# Modify the bind IP in the MongoDB config (fixed sed command)
+sudo sed -i "s/bindIP: 127.0.0.1/bindIP: 0.0.0.0/" /etc/mongod.conf
+
+# Restart MongoDB service to apply the config changes
+sudo systemctl restart mongod
+
+# Enable MongoDB to start at boot
+sudo systemctl enable mongod
+
+# Check MongoDB service status (optional, but good for debugging)
+sudo systemctl status mongod
+
+```
+
+Revised:
+
+``` bash
+
+#!/bin/bash
+ 
+# Update the system package list
+echo Updating package list...
+sudo apt-get update -y
+echo Done!
+ 
+# Upgrade all installed packages to their latest versions
+echo Upgrading installed packages...
+sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+echo Done!
+ 
+echo Installing gnupg and curl...
+sudo apt-get install gnupg curl -y
+echo Done!
+ 
+# Download and add MongoDB GPG key for package verification
+echo Adding MongoDB GPG key...
+sudo rm -f /usr/share/keyrings/mongodb-server-7.0.gpg # Remove key if one exists
+curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg --yes -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
+echo Done!
+ 
+# Add MongoDB repository to the sources list
+echo Adding MongoDB repository to sources list...
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+echo Done!
+ 
+# Update package list again to include the newly added MongoDB repository
+echo Updating package list with MongoDB repository...
+sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
+echo Done!
+ 
+# Install MongoDB version 7.0.6 and specific associated packages non-interactively
+echo Installing MongoDB and related packages...
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    mongodb-org=7.0.6 \
+    mongodb-org-database=7.0.6 \
+    mongodb-org-server=7.0.6 \
+    mongodb-org-shell=7.0.6 \
+    mongodb-org-mongos=7.0.6
+echo Done!
+ 
+# Start MongoDB service immediately
+echo Starting MongoDB service...
+sudo systemctl start mongod
+echo Done!
+ 
+# Enable MongoDB service to start on boot
+echo Enabling MongoDB service to start on boot...
+sudo systemctl enable mongod
+echo Done!
+ 
+# Modify MongoDB configuration to allow remote connections
+echo Configuring MongoDB to allow remote connections...
+sudo sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
+echo Done!
+ 
+# Restart MongoDB service to apply configurations
+echo Restarting MongoDB service...
+sudo systemctl start mongod
+echo Done!
+```
+
+**We need to set a DB_HOST on the app VM to connect this:**
+
+`export DB_HOST=mongodb://10.0.3.5:27017/posts`
+
+## Nginx Reverse Proxy Setup
+
+### 1. Install Nginx
+If Nginx is not installed, use the following commands based on your OS:
+
+### For Ubuntu/Debian:
+```bash
+sudo apt update
+sudo apt install nginx
+```
+---
+
+### 2. Configure Nginx as a Reverse Proxy
+
+### Open the Nginx configuration file:
+- On **Ubuntu/Debian**, the default file is located at `/etc/nginx/sites-available/default`.
+
+You can also create a new config file for a custom setup, e.g., `/etc/nginx/sites-available/my-reverse-proxy`.
+
+### Add Reverse Proxy Configuration:
+Below is an example configuration to proxy traffic to a backend service running at `http://localhost:3000`.
+
+```nginx
+server {
+    listen 80;  # The port on which Nginx listens for incoming traffic (HTTP)
+    server_name your-domain.com;  # Replace with your domain
+
+    location / {
+        proxy_pass http://localhost:3000;  # The backend server to forward requests to
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+- **`proxy_pass`**: Forwards traffic to the service running on `http://localhost:3000`.
+- **`proxy_set_header`**: Preserves client information like the original IP address.
+
+### Save and exit the file.
+
+---
+
+
+### 3. Test the Nginx Configuration
+To verify that your configuration has no syntax errors:
+
+```bash
+sudo nginx -t
+```
+
+If the output shows "syntax is ok", you’re good to go!
+
+---
+
+### 5. Restart Nginx
+After saving your configuration, restart Nginx to apply the changes:
+
+```bash
+sudo systemctl restart nginx
+```
+
+---
+### 6. Check 
+Search the IP address without the ":3000" and it should work. 
+
+## Task: How many services can use a port?
+### Objective
+To demonstrate the behavior of running the Sparta application in two different Git Bash terminals on the same virtual machine (VM) and resolve the resulting error due to port conflicts.
+
+### Step 1: Run the Sparta App
+1. Open the first **Git Bash** terminal.
+2. Navigate to the directory where the Sparta app is located.
+3. Run the app using the command:
+   ```bash
+   npm start
+   ```
+
+### Step 2: Open a Second Terminal and Run the App
+1. Open a second **Git Bash** terminal.
+2. Again, navigate to the directory where the Sparta app is located.
+3. Attempt to run the app using the same command:
+   ```bash
+   npm start
+   ```
+
+#### Expected Error
+When you try to run the Sparta app in the second terminal, you will receive an error indicating that port 3000 is already in use. The error message will look something like this:
+
+```
+Error: listen EADDRINUSE: address already in use ::1:3000
+```
+![alt text](image-1.png)
+
+### Explanation of the Error
+This error occurs because both instances of the Sparta app are trying to bind to the same port (3000). When the first instance is already running and listening on that port, the second instance cannot start.
+
+### Step 3: Fixing the Error
+To resolve this issue, you have two options:
+
+### Option 1: Change the Port Number
+1. Open the `server.js` or relevant configuration file of the Sparta app.
+2. Change the port number from `3000` to another unused port (e.g., `3001`).
+3. Save the changes.
+4. Re-run the app in the second terminal using:
+   ```bash
+   npm start
+   ```
+
+### Option 2: Kill the Existing Process Using Port 3000
+If you want to run the app on port 3000, you can terminate the process currently using that port.
+
+### Step 4: Finding the Process Using Port 3000
+To find out which process is using port 3000, you can use the following command:
+
+### Linux Command:
+```bash
+lsof -i :3000
+```
+
+**Explanation:**
+- `lsof` lists open files and the corresponding processes.
+- `-i :3000` filters the list to show only processes using port 3000.
+
+### Example Output
+You might see output like this:
+```
+COMMAND   PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+node    12345 user   23u  IPv6 0x1234      0t0  TCP *:3000 (LISTEN)
+```
+In this case, the `PID` (Process ID) is `12345`, which you can use to terminate the process.
+
+### Step 5: Killing the Process
+To terminate the process using port 3000, use the `kill` command followed by the PID:
+
+```bash
+kill 12345
+```
+
+**Note:** If the process does not terminate, you can use `kill -9` to forcefully kill it:
+```bash
+kill -9 12345
+```
+
+## Task: Run Sparta app in the background
+ 
+## Work out ways to both run, stop and re-start the app in the background (besides using the "&" at the end of the command):
+ 
+### One way should use pm2
+`pm2` : A production process manager that allows you to run your apps in the background, keep them alive (restart automatically if they crash), monitor performance, and handle logs.
+ 
+`pm2 start npm -- start` : Tells PM2 to start a new process using the npm command to execute the start script defined in your package.json. It launches your Node.js application in the background
+ 
+`pm2 stop npm` :  If you have multiple processes managed by PM2 that were started with the npm -- start, you can stop them all using this command. This effectively halts the application, but does not remove it from PM2's process list.
+ 
+`pm2 restart npm` : This command restarts the running process associated with the npm command. PM2 will first stop the current instance and then start it again, ensuring any updates or changes are applied.
+ 
+Don't forget to install PM2 in your script using `sudo npm install -g pm2`. The `-g` installs this globally, meaning we can access PM2 from any terminal window without needing to be in a specific project directory.
+
+**When using the & operator (e.g., npm start &), the app runs in the background, but there are key issues:**
+
+* No Process Management: There's no built-in way to monitor, restart, or stop the process. You would have to manually kill the process by finding its PID.
+* No Restart on Crash: If the app crashes, it won’t automatically restart.
+* No Logging: & does not provide logging out of the box, whereas tools like pm2 provide easy access to logs.
+ 
+### If time: One other way (can you find another package manager do it like pm2?)
+Research `forever`.
  
 
+Script with PM2:
 
+``` bash
+#!/bin/bash
+
+
+# Check for updates
+echo "update sources list..."
+sudo apt update -y
+echo "update complete"
+
+# Upgrades those checks
+echo "upgrade any packages available..."
+sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
+echo "upgrade complete"
+
+# Install nginx
+sudo apt install -y nginx
+echo "nginx installed"
+
+echo "install nodejs v20..."
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&\
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
+
+echo "check nodejs version..."
+node -v
+echo "nodejs v20 installed"
+
+# Install PM2 globally
+echo "Installing PM2 globally..."
+sudo npm install -g pm2
+echo "PM2 installed."
+
+# Cloning Git repo
+echo "Clone Git folder"
+git clone https://github.com/PriyanSappal/tech264-sparta-app.git
+echo "Cloned tech264-sparta-app"
+
+echo "Change directory to app"
+cd tech264-sparta-app
+cd app
+echo "In app directory"
+export DB_HOST=mongodb://10.0.3.5:27017/posts
+
+
+echo "Start using pm2"
+pm2 start app.js --name "app"
+
+echo "Setting up PM2 to auto-restart on system reboot..."
+pm2 startup systemd
+sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u $USER --hp /home/$USER
+pm2 save
+echo "PM2 is configured to start on boot and auto-restart the app."
+
+```
+
+With nginx:
+
+``` bash
+#!/bin/bash
+
+
+# Check for updates
+echo "update sources list..."
+sudo apt update -y
+echo "update complete"
+
+# Upgrades those checks
+echo "upgrade any packages available..."
+sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
+echo "upgrade complete"
+
+# Install nginx
+sudo apt install -y nginx
+echo "nginx installed"
+
+# nginx default configuration
+echo "configure nginx"
+sudo sed -i 's|try_files $uri $uri/_404;|    proxy_pass http://localhost:3000;|' /etc/nginx/sites-available/default
+echo "configured"
+
+echo "install nodejs v20..."
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&\
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
+
+echo "check nodejs version..."
+node -v
+echo "nodejs v20 installed"
+
+# Install PM2 globally
+echo "Installing PM2 globally..."
+sudo npm install -g pm2
+echo "PM2 installed."
+
+# Cloning Git repo
+echo "Clone Git folder"
+git clone https://github.com/PriyanSappal/tech264-sparta-app.git
+echo "Cloned tech264-sparta-app"
+
+echo "Change directory to app"
+cd tech264-sparta-app
+cd app
+echo "In app directory"
+export DB_HOST=mongodb://10.0.3.5:27017/posts
+
+
+echo "Start using pm2"
+pm2 start app.js --name "app"
+
+
+echo "Setting up PM2 to auto-restart on system reboot..."
+pm2 startup systemd
+sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u $USER --hp /home/$USER
+pm2 save
+echo "PM2 is configured to start on boot and auto-restart the app."
+```
 
 

@@ -29,6 +29,7 @@
   - [Accessing Azure](#accessing-azure)
   - [Azure vs. Azure DevOps](#azure-vs-azure-devops)
   - [Why use the Azure Pricing Calculator:](#why-use-the-azure-pricing-calculator)
+  - [Difference between Azure and AWS](#difference-between-azure-and-aws)
 
 
 ## Diagram of VM:
@@ -113,15 +114,15 @@ at the top of the page.
  
 ### Details needed to plan/create a VNet
  
-1. **Address Space(CIDR Block)*
+1. **Address Space(CIDR Block)**
 - Decide the IP address range the VNet will cover (e.g. 10.0.0.0/16)
  
  
 2. **Subnets:** 
 - Divide the VNet into subnets            
 - Each subnet should have its own IP address range
-  - **public_subnet**t(10.0.2.0/24(256 addresses))
-  - **private_subnet**t(10.0.3.0/24(256 addresses))
+  - **public_subnet** (10.0.2.0/24(256 addresses))
+  - **private_subnet** (10.0.3.0/24(256 addresses))
  
  
 3. **Regions:** 
@@ -271,3 +272,9 @@ All the ways below interact with the ARM (Azure Resource Manager) api.
 - **Budget planning**: Create a budget for your Azure usage.
 - **Cost optimization**: Identify opportunities to reduce your Azure costs.
 - **Scenario planning**: Test different scenarios and configurations to find the most cost-effective solution.
+
+## Difference between Azure and AWS
+
+When creating a VM...
+* On Azure, by default, you get a static public IP assigned to your VM. 
+* On AWS, by default, you get a dynamic IP assigned to the VM. So it will change when you stop and start your VM on AWS.
