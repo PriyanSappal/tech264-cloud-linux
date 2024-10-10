@@ -63,7 +63,10 @@
   - [Task: Run Sparta app in the background](#task-run-sparta-app-in-the-background)
   - [Work out ways to both run, stop and re-start the app in the background (besides using the "\&" at the end of the command):](#work-out-ways-to-both-run-stop-and-re-start-the-app-in-the-background-besides-using-the--at-the-end-of-the-command)
     - [One way should use pm2](#one-way-should-use-pm2)
-    - [If time: One other way (can you find another package manager do it like pm2?)](#if-time-one-other-way-can-you-find-another-package-manager-do-it-like-pm2)
+  - [Final app and db scripts:](#final-app-and-db-scripts)
+    - [Testing process](#testing-process)
+  - [Images - plan for creating using an app + db image:](#images---plan-for-creating-using-an-app--db-image)
+    - [Possible blockers](#possible-blockers)
 
 ## 1. How do we know if something is in the cloud? 
 Cloud services are typically accessed over the internet, meaning the data or application isn't hosted locally. If you're accessing resources or apps without needing specific local hardware, it's likely cloud-based.
@@ -866,125 +869,48 @@ Don't forget to install PM2 in your script using `sudo npm install -g pm2`. The 
 * No Restart on Crash: If the app crashes, it won’t automatically restart.
 * No Logging: & does not provide logging out of the box, whereas tools like pm2 provide easy access to logs.
  
-### If time: One other way (can you find another package manager do it like pm2?)
-Research `forever`.
- 
+## Final app and db scripts:
+ * [App Script](bash_scripts/prov-app.sh)
+ * [DB Script](bash_scripts/prov-db.sh)
 
-Script with PM2:
+### Testing process
 
-``` bash
-#!/bin/bash
+It is essential to start the DB script first so that the app has something to connect to, when starting the db script you may need to troubleshoot and look out for some things:
+  - SSH into your DB VM and check the status of your mongodb (`sudo systemctl status mongod`).
+  - When you create a new app VM make sure you use the private IP that is displayed on your DB VM so that it connects. 
+  - `cat /etc/mongod.conf | grep bindIp` to check the bindIp is 0.0.0.0
+  - `sudo systemctl is-enabled mongod`
 
+## Images - plan for creating using an app + db image:
+1. Create DB VM using custom image and user data to run entire DB script. 
+2. Tested user data did it's job. 
+3. Create app VM using custom image and user data to run entire app script
+   - make sure the DB_HOST variable has the correct IP
+4. Test by:
+   - check public IP to bring up app homepage 
+   - check /posts page
+5. Create DB VM image from DB VM
+   - delete the DB VM
+6. Create DB VM from this image
+7. Create app VM image from app VM
+   - delete the app VM
+8. Create app VM from the app image just created 
+   - special script - run-app-only.sh
+      - start with the she-bang
+      - export DB_HOST env variable
+      - cd into app folder
+      - (probably don't need it) npm install
+      - pm2 stop all
+      - pm2 start app.js
+   - posts page to work connecting to DB VM made from image
 
-# Check for updates
-echo "update sources list..."
-sudo apt update -y
-echo "update complete"
+To create image:
+1) Under overview, go to capture and image. 
+2) Use in Bash -> sudo waagent -deprovision+user
 
-# Upgrades those checks
-echo "upgrade any packages available..."
-sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
-echo "upgrade complete"
-
-# Install nginx
-sudo apt install -y nginx
-echo "nginx installed"
-
-echo "install nodejs v20..."
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&\
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
-
-echo "check nodejs version..."
-node -v
-echo "nodejs v20 installed"
-
-# Install PM2 globally
-echo "Installing PM2 globally..."
-sudo npm install -g pm2
-echo "PM2 installed."
-
-# Cloning Git repo
-echo "Clone Git folder"
-git clone https://github.com/PriyanSappal/tech264-sparta-app.git
-echo "Cloned tech264-sparta-app"
-
-echo "Change directory to app"
-cd tech264-sparta-app
-cd app
-echo "In app directory"
-export DB_HOST=mongodb://10.0.3.5:27017/posts
-
-
-echo "Start using pm2"
-pm2 start app.js --name "app"
-
-echo "Setting up PM2 to auto-restart on system reboot..."
-pm2 startup systemd
-sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u $USER --hp /home/$USER
-pm2 save
-echo "PM2 is configured to start on boot and auto-restart the app."
-
-```
-
-With nginx:
-
-``` bash
-#!/bin/bash
-
-
-# Check for updates
-echo "update sources list..."
-sudo apt update -y
-echo "update complete"
-
-# Upgrades those checks
-echo "upgrade any packages available..."
-sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
-echo "upgrade complete"
-
-# Install nginx
-sudo apt install -y nginx
-echo "nginx installed"
-
-# nginx default configuration
-echo "configure nginx"
-sudo sed -i 's|try_files $uri $uri/_404;|    proxy_pass http://localhost:3000;|' /etc/nginx/sites-available/default
-echo "configured"
-
-echo "install nodejs v20..."
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&\
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
-
-echo "check nodejs version..."
-node -v
-echo "nodejs v20 installed"
-
-# Install PM2 globally
-echo "Installing PM2 globally..."
-sudo npm install -g pm2
-echo "PM2 installed."
-
-# Cloning Git repo
-echo "Clone Git folder"
-git clone https://github.com/PriyanSappal/tech264-sparta-app.git
-echo "Cloned tech264-sparta-app"
-
-echo "Change directory to app"
-cd tech264-sparta-app
-cd app
-echo "In app directory"
-export DB_HOST=mongodb://10.0.3.5:27017/posts
-
-
-echo "Start using pm2"
-pm2 start app.js --name "app"
-
-
-echo "Setting up PM2 to auto-restart on system reboot..."
-pm2 startup systemd
-sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u $USER --hp /home/$USER
-pm2 save
-echo "PM2 is configured to start on boot and auto-restart the app."
-```
-
-
+### Possible blockers
+* Check DEBIAN_FRONTEND=noninteractive.
+* Check on different browser or clear cache on current browser.
+* Create separate files to copy the script from. 
+* Check to see the order of your script, for example make sure after nginx is installed you configure it. 
+* Ensure that if you have started a service that it is enabled too. 
