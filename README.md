@@ -905,8 +905,13 @@ It is essential to start the DB script first so that the app has something to co
    - posts page to work connecting to DB VM made from image
 
 To create image:
-1) Under overview, go to capture and image. 
-2) Use in Bash -> sudo waagent -deprovision+user
+1. Select **Capture Image** on the VM of choice's **Overview**.
+2. Under **Instance details**, Select **No, capture only a managed image**.
+3. Enable **Automatically delete this virtual machine after creating the image**.
+4. Name image appropriately.
+5. Run `sudo waagent -deprovision+user` inside our DB SSH to remove delete information we no longer need, then return to Azure window.
+6. Add tags.
+7. Review, then create.
 
 ### Possible blockers
 * Check DEBIAN_FRONTEND=noninteractive.

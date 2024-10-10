@@ -15,4 +15,3 @@ pm2 stop all
 echo "start"
 pm2 start app.js
 echo "App started with pm2"
-
