@@ -69,6 +69,8 @@
   - [**To create image:**](#to-create-image)
     - [Possible blockers](#possible-blockers)
   - [Alerting and Monitoring](#alerting-and-monitoring)
+  - [Types of Scaling](#types-of-scaling)
+  - [Architecture for an Azure VM Scale Set Internet](#architecture-for-an-azure-vm-scale-set-internet)
     - [How to increase CPU](#how-to-increase-cpu)
     - [Dashboard VM](#dashboard-vm)
     - [Load testing with Apache Bench and how to create unhealthy instances](#load-testing-with-apache-bench-and-how-to-create-unhealthy-instances)
@@ -939,6 +941,12 @@ It is essential to start the DB script first so that the app has something to co
 ## Alerting and Monitoring
 
 ![alt text](Azure/image-1.png)
+
+## Types of Scaling 
+![alt text](Azure/image-2.png)
+
+## Architecture for an Azure VM Scale Set Internet
+![alt text](Azure/image.png)
 
 ### How to increase CPU
 ```bash
