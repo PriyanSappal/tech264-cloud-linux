@@ -30,6 +30,9 @@
   - [Azure vs. Azure DevOps](#azure-vs-azure-devops)
   - [Why use the Azure Pricing Calculator:](#why-use-the-azure-pricing-calculator)
   - [Difference between Azure and AWS](#difference-between-azure-and-aws)
+  - [Alerting and Monitoring](#alerting-and-monitoring)
+  - [Types of Scaling](#types-of-scaling)
+  - [Architecture for an Azure VM Scale Set Internet](#architecture-for-an-azure-vm-scale-set-internet)
 
 
 ## Diagram of VM:
@@ -278,3 +281,16 @@ All the ways below interact with the ARM (Azure Resource Manager) api.
 When creating a VM...
 * On Azure, by default, you get a static public IP assigned to your VM. 
 * On AWS, by default, you get a dynamic IP assigned to the VM. So it will change when you stop and start your VM on AWS.
+
+## Alerting and Monitoring 
+
+![alt text](image-1.png)
+
+## Types of Scaling
+
+![alt text](image.png)
+
+## Architecture for an Azure VM Scale Set Internet
+
+![alt text](image-2.png)
+The custom autoscale (VM scale set) is to acheive high availability and scalability 

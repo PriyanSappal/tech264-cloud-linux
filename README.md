@@ -66,7 +66,23 @@
   - [Final app and db scripts:](#final-app-and-db-scripts)
     - [Testing process](#testing-process)
   - [Images - plan for creating using an app + db image:](#images---plan-for-creating-using-an-app--db-image)
+  - [**To create image:**](#to-create-image)
     - [Possible blockers](#possible-blockers)
+  - [Alerting and Monitoring](#alerting-and-monitoring)
+    - [How to increase CPU](#how-to-increase-cpu)
+    - [Dashboard VM](#dashboard-vm)
+    - [Load testing with Apache Bench and how to create unhealthy instances](#load-testing-with-apache-bench-and-how-to-create-unhealthy-instances)
+  - [Scale sets on Azure](#scale-sets-on-azure)
+    - [Basics --\>](#basics---)
+    - [Disks --\>](#disks---)
+    - [Networking --\>](#networking---)
+    - [Health --\>](#health---)
+    - [Advanced --\>](#advanced---)
+    - [Tags --\>](#tags---)
+    - [Review and Create --\>](#review-and-create---)
+    - [Delete --\>](#delete---)
+    - [To SSH:](#to-ssh)
+  - [What is a load balancer?](#what-is-a-load-balancer)
 
 ## 1. How do we know if something is in the cloud? 
 Cloud services are typically accessed over the internet, meaning the data or application isn't hosted locally. If you're accessing resources or apps without needing specific local hardware, it's likely cloud-based.
@@ -904,7 +920,7 @@ It is essential to start the DB script first so that the app has something to co
       - pm2 start app.js
    - posts page to work connecting to DB VM made from image
 
-To create image:
+## **To create image:**
 1. Select **Capture Image** on the VM of choice's **Overview**.
 2. Under **Instance details**, Select **No, capture only a managed image**.
 3. Enable **Automatically delete this virtual machine after creating the image**.
@@ -919,3 +935,113 @@ To create image:
 * Create separate files to copy the script from. 
 * Check to see the order of your script, for example make sure after nginx is installed you configure it. 
 * Ensure that if you have started a service that it is enabled too. 
+
+## Alerting and Monitoring
+
+![alt text](Azure/image-1.png)
+
+### How to increase CPU
+```bash
+sudo apt-get install apache2-utils
+```
+```bash
+ab
+```
+### Dashboard VM
+ 
+1. In the `VM` -> `Overview`-> scroll down to where is:
+* Properties--Monitoring--Capabilities--Recommendations--Tutorials
+2. Select `Monitoring`
+3. In the monitoring window -> `Platform metrics` -> pin the metrics that we need(e.g. CPU, Disk bytes)
+4. `Click pin`-> `create new`-> type(private/pubic) -> `Dashboard name`-> `Pin`
+   
+### Load testing with Apache Bench and how to create unhealthy instances
+ 
+```bash
+ab -n 1000 -c 100 http://yourwebsite.com/
+ 
+# ab -n 1000 -c 100 http://public ip address/
+# to increase the requests : ab -n 1000 -c 200...
+```
+  *You can increase the size of these by increasing the numbers.*
+
+## Scale sets on Azure
+
+### Basics -->
+1. Search "scale set" in the top search bar and click **virtual machine scale set**.
+2. **Assign** resource group `(tech264)`.
+3. **Name** the VM (e.g tech264-name...)
+4. Set **region** to `(Europe) UK South`.
+5. Select all 3 availability zones.
+6. Under **orchestration mode**, select `uniform`.
+7. Set the security type to `standard`.
+8. For **scaling**, select `autoscaling`. A window will appear below it - click **configure**.
+9. Select the pencil for the default condition to edit it.
+10. Input **3** for the maximum instances / VMs.
+11. Input **75** for the CPU threshold greater than.
+12. Select **Save**.
+13. Once returned to the basics page, select "see all images".
+14. Select "my images" and search for your image - then **select**.
+9. Change **username** to something more secure.
+10. Change SSH public key source to `Use existing key stored in Azure`.
+11. Select **your** Stored key (e.g tech264..).
+ 
+### Disks -->
+1. Change OS Disk type to `Standard SSD (locally redundant storage)`.
+ 
+### Networking -->
+1. For the **Virtual network**, Select your subnet.
+2. Edit your **Network Interface**.
+3. Select allow selected ports, then enable `SSH(22)` and `HTTP(80)`.
+4. Ensure public IP address is **disabled** as the load balancer will handle this now.
+5. Apply those changes and you will be returned to the Networking screen.
+6. Select **Create a load balancer**.
+7. Change the name to your naming conventions with al "lb" on the end of it, to label it as a **load balancer**.
+8. Select **Create**. This will take up the "Select load balancer" slot.
+ 
+### Health -->
+1. **Tick** the box labelled "Enable application health monitoring".
+2. **Tick** the box labelled "Automatic repairs".
+ 
+### Advanced -->
+1. **Tick** the box "Enable user data" to allow an input and insert:
+```bash
+#!/bin/bash
+ 
+echo "Change directory to app"
+cd repo/app
+echo "In app directory"
+ 
+# Stop all existing pm2 processes
+pm2 stop all
+ 
+echo "start"
+pm2 start app.js
+echo "App started with pm2
+```
+ 
+### Tags -->
+1. Select owner and your name.
+ 
+### Review and Create -->
+1. **Ensure** you've selected the correct options.
+2. **Create** your shiny new VM scale set.
+
+### Delete -->
+1. Going to the resource group.
+2. Select the NIC, load balancer, public ip and the actual scale set. 
+ 
+### To SSH:
+Need to change the private IP with public and at the port which is 5000 (maybe try 5001). 
+
+Should look something like this:
+
+`ssh -i ~/.ssh/tech264-priyan-az-key -p 50000 adminuser@85.210.53.221`
+
+## What is a load balancer?
+
+A Load Balancer is a service that distributes incoming traffic among multiple servers to ensure no single server is overwhelmed, which improves performance and availability. In Azure, the load balancer ensures:
+
+* Even distribution of traffic across VMs.
+* Failover protection: If a VM becomes unhealthy or unavailable, the load balancer redirects traffic to healthy VMs.
+* Scalability: Easily handles spikes in traffic by balancing across multiple VMs.
