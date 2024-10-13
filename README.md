@@ -69,6 +69,11 @@
   - [**To create image:**](#to-create-image)
     - [Possible blockers](#possible-blockers)
   - [Alerting and Monitoring](#alerting-and-monitoring)
+    - [1. Manual Monitoring (Worst)](#1-manual-monitoring-worst)
+    - [2. Basic Autoscale with Default Thresholds](#2-basic-autoscale-with-default-thresholds)
+    - [3. Monitoring with Alerts](#3-monitoring-with-alerts)
+    - [4. Custom Autoscaling with Advanced Rules](#4-custom-autoscaling-with-advanced-rules)
+    - [5. Continuous Load Testing + Auto-healing with Health Probes (Best)](#5-continuous-load-testing--auto-healing-with-health-probes-best)
   - [Types of Scaling](#types-of-scaling)
   - [Architecture for an Azure VM Scale Set Internet](#architecture-for-an-azure-vm-scale-set-internet)
     - [How to increase CPU](#how-to-increase-cpu)
@@ -85,6 +90,11 @@
     - [Delete --\>](#delete---)
     - [To SSH:](#to-ssh)
   - [What is a load balancer?](#what-is-a-load-balancer)
+  - [Setting Up a Dashboard in Azure](#setting-up-a-dashboard-in-azure)
+    - [Steps to Setup a Dashboard:](#steps-to-setup-a-dashboard)
+  - [How Load Testing and Dashboard Helped Us](#how-load-testing-and-dashboard-helped-us)
+  - [CPU Usage Alert Setup](#cpu-usage-alert-setup)
+    - [Steps to Setup CPU Usage Alert:](#steps-to-setup-cpu-usage-alert)
 
 ## 1. How do we know if something is in the cloud? 
 Cloud services are typically accessed over the internet, meaning the data or application isn't hosted locally. If you're accessing resources or apps without needing specific local hardware, it's likely cloud-based.
@@ -941,6 +951,31 @@ It is essential to start the DB script first so that the app has something to co
 ## Alerting and Monitoring
 
 ![alt text](Azure/image-1.png)
+### 1. Manual Monitoring (Worst)
+- **Method**: Manually checking the Azure portal to monitor VM scale set metrics (CPU usage, memory usage, etc.).
+- **Downside**: Time-consuming, not efficient for handling sudden traffic spikes, and prone to human error.
+- **Best For**: Rarely used for critical applications.
+   
+### 2. Basic Autoscale with Default Thresholds
+- **Method**: Setting up basic autoscaling based on default CPU thresholds (e.g., scale out when CPU > 75%).
+- **Downside**: Predefined thresholds may not suit every app’s load pattern. Doesn’t account for other metrics like memory or network traffic.
+- **Best For**: Non-mission-critical applications with predictable traffic.
+
+### 3. Monitoring with Alerts
+- **Method**: Setting up email or SMS alerts to notify the admin when key metrics exceed certain thresholds.
+- **Downside**: Still requires manual intervention after receiving alerts.
+- **Best For**: Small applications that need real-time notifications for rapid troubleshooting.
+
+### 4. Custom Autoscaling with Advanced Rules
+- **Method**: Creating custom autoscaling rules that respond dynamically to changes in traffic, including multiple metrics (CPU, memory, disk I/O).
+- **Benefit**: More tailored to application demands, improves resource utilization, handles fluctuating traffic efficiently.
+- **Best For**: Applications with unpredictable or varying traffic patterns.
+
+### 5. Continuous Load Testing + Auto-healing with Health Probes (Best)
+- **Method**: Combining continuous load testing with health probes and automatic scaling. The load balancer reroutes traffic to healthy instances, while the system automatically heals/recreates unhealthy VMs.
+- **Benefit**: Most resilient, handles extreme traffic spikes, and maintains application availability.
+- **Best For**: High-availability, mission-critical applications that need 24/7 uptime.
+
 
 ## Types of Scaling 
 ![alt text](Azure/image-2.png)
@@ -1053,3 +1088,75 @@ A Load Balancer is a service that distributes incoming traffic among multiple se
 * Even distribution of traffic across VMs.
 * Failover protection: If a VM becomes unhealthy or unavailable, the load balancer redirects traffic to healthy VMs.
 * Scalability: Easily handles spikes in traffic by balancing across multiple VMs.
+
+
+
+
+## Setting Up a Dashboard in Azure
+
+The Azure Dashboard helps in visualizing key metrics (CPU, memory, network) across all instances in real-time, making it easier to monitor and troubleshoot application health.
+
+### Steps to Setup a Dashboard:
+
+1. **Navigate to Azure Portal**: 
+   - Go to the [Azure Portal](https://portal.azure.com).
+   
+2. **Go to Monitor**: 
+   - In the search bar, type **Monitor** and click on the result.
+   
+3. **Add Metrics to Dashboard**:
+   - From the **Monitor** menu, go to **Metrics**.
+   - Select your **Resource Group** and **VM Scale Set**.
+   - Add key metrics (e.g., **CPU Percentage**, **Network In/Out**, **Disk I/O**).
+   - Click **Pin to Dashboard** for each metric.
+   
+4. **Create Custom Views**:
+   - Use the **custom view** option to arrange the dashboard widgets in a way that makes monitoring easier for your specific needs.
+
+5. **Save and Access the Dashboard**:
+   - Save the dashboard by giving it a name and selecting "private" or "shared" access.
+   - Access the dashboard from the **Dashboard** menu at any time.
+
+---
+
+## How Load Testing and Dashboard Helped Us
+
+By combining **load testing** with **Azure dashboards**, we could visualize how the application behaves under extreme conditions, such as heavy traffic spikes. Here's how this combination helped:
+
+- **Identification of Bottlenecks**: The dashboard revealed high CPU and memory usage under load, showing which instances were struggling to handle traffic.
+- **Response to Alerts**: The dashboard showed real-time status, while load testing triggered autoscaling events and CPU alerts, which were instantly reflected on the dashboard.
+- **Health Monitoring**: Through load testing, we simulated failures, and the load balancer routed traffic to healthy instances, as visualized in the dashboard.
+
+When pushing the system to extreme loads, I noticed a drop in responsiveness and marked unhealthy instances, as shown on the dashboard. 
+
+---
+
+## CPU Usage Alert Setup
+
+We set up an alert for when CPU usage crosses a threshold to notify us via email.
+
+### Steps to Setup CPU Usage Alert:
+
+1. **Navigate to Monitor**:
+   - In the Azure portal, go to **Monitor** > **Alerts**.
+
+2. **Create a New Alert Rule**:
+   - Click **Create** > **Alert Rule**.
+   - Select your **VM Scale Set** resource.
+
+3. **Define a Condition**:
+   - Under **Condition**, choose **CPU Percentage**.
+   - Set the alert threshold to, for example, **80%**.
+   - Set **Evaluation period** to **1 minute** and **Check frequency** to **every 1 minute**.
+
+4. **Set up Action Group**:
+   - In the **Actions** section, create a new action group.
+   - Choose **Email/SMS/Push/Voice** for the notification type.
+   - Add your email address.
+
+5. **Create Alert**:
+   - Give the alert rule a name (e.g., "High CPU Usage Alert").
+   - Click **Create**.
+
+6. **Enable Alerts**:
+   - Ensure the alert is enabled, and you'll receive notifications when CPU crosses the defined threshold.
