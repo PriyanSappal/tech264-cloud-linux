@@ -90,6 +90,9 @@
     - [Delete --\>](#delete---)
     - [To SSH:](#to-ssh)
   - [What is a load balancer?](#what-is-a-load-balancer)
+    - [Managing Instances in a Scale Set](#managing-instances-in-a-scale-set)
+    - [Create an Unhealthy Instance for Testing](#create-an-unhealthy-instance-for-testing)
+    - [Steps to Simulate an Unhealthy Instance:](#steps-to-simulate-an-unhealthy-instance)
   - [Setting Up a Dashboard in Azure](#setting-up-a-dashboard-in-azure)
     - [Steps to Setup a Dashboard:](#steps-to-setup-a-dashboard)
   - [How Load Testing and Dashboard Helped Us](#how-load-testing-and-dashboard-helped-us)
@@ -993,10 +996,10 @@ ab
 ### Dashboard VM
  
 1. In the `VM` -> `Overview`-> scroll down to where is:
-* Properties--Monitoring--Capabilities--Recommendations--Tutorials
-2. Select `Monitoring`
-3. In the monitoring window -> `Platform metrics` -> pin the metrics that we need(e.g. CPU, Disk bytes)
-4. `Click pin`-> `create new`-> type(private/pubic) -> `Dashboard name`-> `Pin`
+  * Properties--Monitoring--Capabilities--Recommendations--Tutorials
+1. Select `Monitoring`
+2. In the monitoring window -> `Platform metrics` -> pin the metrics that we need(e.g. CPU, Disk bytes)
+3. `Click pin`-> `create new`-> type(private/pubic) -> `Dashboard name`-> `Pin`
    
 ### Load testing with Apache Bench and how to create unhealthy instances
  
@@ -1089,7 +1092,44 @@ A Load Balancer is a service that distributes incoming traffic among multiple se
 * Failover protection: If a VM becomes unhealthy or unavailable, the load balancer redirects traffic to healthy VMs.
 * Scalability: Easily handles spikes in traffic by balancing across multiple VMs.
 
+### Managing Instances in a Scale Set
 
+- **View Instances**: Go to the **Instances** tab of the Scale Set in Azure Portal. This shows a list of VMs in the scale set.
+- **Stop, Start, or Restart Instances**: Use the options to manually stop, restart, or start specific instances.
+- **Scaling Instances**: Configure the **scaling rules** in the **Scaling** tab, such as scaling based on CPU usage thresholds.
+
+---
+
+### Create an Unhealthy Instance for Testing
+
+### Steps to Simulate an Unhealthy Instance:
+
+1. **Simulate High CPU Usage**:
+   
+**How to increase CPU:**
+```bash
+sudo apt-get install apache2-utils
+```
+```bash
+ab
+```
+**Load testing with Apache Bench:**
+ 
+```bash
+ab -n 1000 -c 100 http://yourwebsite.com/
+ 
+# ab -n 1000 -c 100 http://public ip address/
+# to increase the requests : ab -n 1000 -c 200...
+```
+
+2. **Check Instance Health**:
+   - The health probe configured in the load balancer will check for the responsiveness of the instance.
+   - If the instance doesn't respond, it will be marked **unhealthy** and removed from the load balancer’s active pool.
+
+3. **Why It’s Marked Unhealthy**:
+   - If an instance fails to respond to health probes (e.g., it’s overloaded or services crash), the load balancer marks it as unhealthy and stops directing traffic to it.
+
+---
 
 
 ## Setting Up a Dashboard in Azure
