@@ -98,6 +98,29 @@
   - [How Load Testing and Dashboard Helped Us](#how-load-testing-and-dashboard-helped-us)
   - [CPU Usage Alert Setup](#cpu-usage-alert-setup)
     - [Steps to Setup CPU Usage Alert:](#steps-to-setup-cpu-usage-alert)
+  - [Remove dashboards and alert and action group](#remove-dashboards-and-alert-and-action-group)
+    - [Removing a Dashboard](#removing-a-dashboard)
+    - [Removing an Alert Rule](#removing-an-alert-rule)
+    - [Removing an Action Group](#removing-an-action-group)
+- [Re-create the 3-subnet architecture to make the database private](#re-create-the-3-subnet-architecture-to-make-the-database-private)
+  - [Set up the Virtual Network](#set-up-the-virtual-network)
+    - [--\> Basics](#---basics)
+    - [--\> IP addresses](#---ip-addresses)
+    - [--\> Tags](#---tags)
+    - [--\> Review and Create](#---review-and-create)
+  - [Create Database VM](#create-database-vm)
+    - [--\> Basics](#---basics-1)
+    - [--\> Review and Create](#---review-and-create-1)
+  - [Create the App VM](#create-the-app-vm)
+    - [--\> Basics](#---basics-2)
+    - [--\> Networking](#---networking)
+    - [--\> Advanced](#---advanced)
+    - [--\> Review and Create](#---review-and-create-2)
+  - [Create a virtual machine for the NVA.](#create-a-virtual-machine-for-the-nva)
+    - [--\> Basics](#---basics-3)
+    - [--\> Networking](#---networking-1)
+    - [--\> Review and Create](#---review-and-create-3)
+    - [Steps for Code-along](#steps-for-code-along)
 
 ## 1. How do we know if something is in the cloud? 
 Cloud services are typically accessed over the internet, meaning the data or application isn't hosted locally. If you're accessing resources or apps without needing specific local hardware, it's likely cloud-based.
@@ -1110,9 +1133,7 @@ A Load Balancer is a service that distributes incoming traffic among multiple se
 ```bash
 sudo apt-get install apache2-utils
 ```
-```bash
-ab
-```
+
 **Load testing with Apache Bench:**
  
 ```bash
@@ -1200,3 +1221,161 @@ We set up an alert for when CPU usage crosses a threshold to notify us via email
 
 6. **Enable Alerts**:
    - Ensure the alert is enabled, and you'll receive notifications when CPU crosses the defined threshold.
+
+![Screenshot of CPU alert](image-3.png)
+
+## Remove dashboards and alert and action group
+
+### Removing a Dashboard
+1. Navigate to Dashboards:
+   * In the Azure portal, click on “Dashboard” from the left-hand menu.
+2. Select the Dashboard:
+   * Find the dashboard you want to delete. Click on the three dots (ellipsis) next to the dashboard name.
+3. Delete the Dashboard:
+   * Select “Delete” from the dropdown menu.
+   * Confirm the deletion when prompted.#
+ 
+### Removing an Alert Rule
+1. Navigate to Azure Monitor:
+   * In the Azure portal, go to “Monitoring” from the left-hand menu.
+2. Select Alerts:
+   * Under the “Alerts” section, click on “Alert rules”.
+3. Find the Alert Rule:
+   * Locate the alert rule you want to delete. You can use the search bar to find it quickly.
+4. Delete the Alert Rule:
+   * Click on the three dots (ellipsis) next to the alert rule.
+   * Select “Delete” and confirm the deletion.
+ 
+### Removing an Action Group
+1. Navigate to Azure Monitor:
+   * In the Azure portal, go to “Monitoring”.
+2. Select Action Groups:
+   * Under the “Alerts” section, click on “Action groups”.
+3. Find the Action Group:
+   * Locate the action group you want to delete.
+4. Delete the Action Group:
+   * Click on the three dots (ellipsis) next to the action group.
+   * Select “Delete” and confirm the deletion.
+  
+
+# Re-create the 3-subnet architecture to make the database private
+
+![3-subnet architecture](image-2.png)
+ 
+## Set up the Virtual Network
+ 
+### --> Basics
+1. Name appropriately (tech264-name-in-3-subnet-vnet-db-vm)
+ 
+### --> IP addresses
+1. Edit **default subnet**, rename to **public-subnet** and change **starting address** to `10.0.1.0`.
+2. Add a new subnet, rename to **dmz-subnet** and change **starting address** to `10.0.3.0`.
+3. Add another new subnet for private subnet, rename to private-subnet and change **starting address** to` 10.0.4.0` and enable **private subnet**. This means that whatever you put in this subnet cannot access the internet.
+ 
+### --> Tags
+1. Select owner and your name.
+ 
+### --> Review and Create
+1. **Ensure** you've selected the correct options.
+2. **Create** your shiny new secure virtual network.
+ 
+Then we create a virtual machine using our database image. We start with the database as we follow the 2-tier architecture sructure.
+ 
+## Create Database VM
+Follow the usual **DATABASE** steps with these slight changes...
+ 
+### --> Basics
+1. Select **zone 3** for avaialiblity zone assigned to the DB.
+2. Select the previously created virtual network and select the private subnet. 10.0.4.0
+3. Disable public IP address.
+4. Only enable **SSH port**.
+ 
+### --> Review and Create
+1. **Ensure** you've selected the correct options.
+2. **Create** your shiny new DB.
+ 
+Once this is done, we create the application that will connect to the database and display the information.
+ 
+## Create the App VM
+Follow the usual **APP** steps with these slight changes...
+ 
+### --> Basics
+1. Select **zone 1** for avaialiblity zone assigned to the App.
+ 
+### --> Networking
+1. Select public subnet.
+ 
+### --> Advanced
+1. Enable **user data** and input your `image script` (script you use to run the image). [run app script](bash_scripts/run-app-only.sh) 
+2. Change the **IP** in the **export line** to the **private IP** of the **DB** we created previously.
+ 
+### --> Review and Create
+1. **Ensure** you've selected the correct options.
+2. **Create** your shiny new App.
+ 
+Now we create the VM for the Network Virtual Appliance (NVA). This performs network functions like routing, firewalling, trafic filtering and load balancing.
+
+
+ 
+## Create a virtual machine for the NVA.
+ 
+### --> Basics
+1. Name it appropriately (tech264-name-in-3-subnet-nva).
+2. Select **zone 2** for avaialiblity zone assigned to the NVA.
+3. Select **Standard security** as it may have changed.
+4. Select **see all images** and find the **clean-image**.
+5. Leave SSH as the only port.
+ 
+### --> Networking
+1. Use the **DMZ subnet**.
+2. Leave the public IP initially. later on if we used in production, we wouldn't.
+ 
+### --> Review and Create
+1. **Ensure** you've selected the correct options.
+2. **Create** your shiny new NVA.
+
+### Steps for Code-along
+1. set up a new vnet - 3 subnet version
+   1.  create 3 subnets and name then appropriately
+   2.  give the addresses 10.0.2.0 for the public, 3 for the dmz and 4 for the private subnet
+   3. for the private subnet enable the no outbound access - this mean whatever is in the subnet cannot access the internet
+  
+   4. tag yourself as owner
+   5. create
+2. Create db vm from image
+   1. go to your ready-to-run-db image
+   2. create a vm
+   3. name appropriately 
+   4. for availability- self select and db in zone 3
+   5. allow ssh (for now)
+   6. disk as normal
+   7. networking - choose the right vnet and subnet, no public ip
+   
+3. Create the app vm from image
+   1. go to your ready-to-run-app image
+   2. create a vm
+   3. name
+   4. for availability- self select and db in zone 1
+   5. allow http and ssh
+   6. disk as normal
+   7. networking - choose the right vnet (3 subnet vnet) and subnet (public)
+4. Create NVA vm
+   1. create with ramons's clean image image
+   2. name
+   3. for availability- self select and db in zone 2
+   4. allow just ssh
+   5. disk as usual
+   6. networking - choose the right vnet (3 subnet vnet) and subnet (dmz)
+   7. give public ip (for now) to allow us to ssh in
+   8. no user data - can upgrade and update when we ssh in
+   9. create
+5. Set a ping (sends a packet regularly) to check the comms between the app and the db vms
+   1. ssh into the app vm
+   2. we want to ping the db vm ```ping 10.0.4.4```
+   3. each message is the db replying and it also tells you how long the response takes (ctrl c/z to exit)
+    
+6. set up routing (using a routing table)
+   1. search route table on az
+   2. create
+   3. go to resources
+   4. add a route

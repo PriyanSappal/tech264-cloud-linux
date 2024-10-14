@@ -33,6 +33,10 @@
   - [Alerting and Monitoring](#alerting-and-monitoring)
   - [Types of Scaling](#types-of-scaling)
   - [Architecture for an Azure VM Scale Set Internet](#architecture-for-an-azure-vm-scale-set-internet)
+- [Azure High Availability and Scaling](#azure-high-availability-and-scaling)
+  - [Availability Set](#availability-set)
+  - [Availability Zone](#availability-zone)
+  - [Virtual Machine Scale Set (VMSS)](#virtual-machine-scale-set-vmss)
 
 
 ## Diagram of VM:
@@ -294,3 +298,57 @@ When creating a VM...
 
 ![alt text](image-2.png)
 The custom autoscale (VM scale set) is to acheive high availability and scalability 
+
+# Azure High Availability and Scaling
+
+## Availability Set
+
+**What is an Availability Set?**
+An Availability Set is a grouping of Virtual Machines (VMs) designed to increase availability by spreading them across multiple fault and update domains.
+
+**How Does It Work?**
+- **Fault Domains (FD)**: Distributes VMs across different hardware racks to reduce impact from hardware failures.
+- **Update Domains (UD)**: Ensures that only one subset of VMs undergoes maintenance at a time.
+
+**Advantages:**
+- Provides high availability within a data center.
+- Cost-effective.
+- Manages planned maintenance with minimal disruption.
+
+**Disadvantages:**
+- Limited to a single data center, no protection against complete data center outages.
+- No zone-level redundancy.
+
+---
+
+## Availability Zone
+
+**What is an Availability Zone?**
+An Availability Zone is a physical location within an Azure region that hosts VMs in separate data centers for higher availability.
+
+**Why Superior to an Availability Set?**
+- Provides geographic separation by placing VMs in different data centers.
+- More resilient to data center-wide failures.
+
+**Disadvantages:**
+- Higher costs due to cross-zone data transfer.
+- Potential for increased latency between zones.
+
+---
+
+## Virtual Machine Scale Set (VMSS)
+
+**What is a Virtual Machine Scale Set?**
+A service that allows for automatic scaling of a group of identical, load-balanced VMs.
+
+**Type of Scaling:**
+- **Horizontal Scaling**: Increases or decreases the number of VMs based on load.
+
+**How Does It Work?**
+- Automatically scales VMs in response to rules (e.g., CPU utilization).
+- Offers both uniform and flexible orchestration options.
+
+**Limitations:**
+- Provisioning time can delay scaling.
+- Best suited for stateless applications.
+- Limited VM customization in uniform mode.
