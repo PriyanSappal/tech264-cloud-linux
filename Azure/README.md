@@ -343,6 +343,7 @@ A service that allows for automatic scaling of a group of identical, load-balanc
 
 **Type of Scaling:**
 - **Horizontal Scaling**: Increases or decreases the number of VMs based on load.
+- **Vertical Scaling**: This involves manually upgrading the size of the VM instances (e.g., moving from a standard to a higher-performance VM type). 
 
 **How Does It Work?**
 - Automatically scales VMs in response to rules (e.g., CPU utilization).
@@ -351,4 +352,4 @@ A service that allows for automatic scaling of a group of identical, load-balanc
 **Limitations:**
 - Provisioning time can delay scaling.
 - Best suited for stateless applications.
-- Limited VM customization in uniform mode.
+- Limited VM customisation in uniform mode.

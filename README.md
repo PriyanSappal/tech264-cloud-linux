@@ -120,7 +120,9 @@
     - [--\> Basics](#---basics-3)
     - [--\> Networking](#---networking-1)
     - [--\> Review and Create](#---review-and-create-3)
-    - [Steps for Code-along](#steps-for-code-along)
+    - [Steps for Code-along (3 subnet architecture)](#steps-for-code-along-3-subnet-architecture)
+  - [How to make a Database private using a 3 Subnet Architecture](#how-to-make-a-database-private-using-a-3-subnet-architecture)
+    - [Stopping all the VMs and Restarting](#stopping-all-the-vms-and-restarting)
 
 ## 1. How do we know if something is in the cloud? 
 Cloud services are typically accessed over the internet, meaning the data or application isn't hosted locally. If you're accessing resources or apps without needing specific local hardware, it's likely cloud-based.
@@ -1222,7 +1224,7 @@ We set up an alert for when CPU usage crosses a threshold to notify us via email
 6. **Enable Alerts**:
    - Ensure the alert is enabled, and you'll receive notifications when CPU crosses the defined threshold.
 
-![Screenshot of CPU alert](image-3.png)
+![Screenshot of CPU alert](images/image-3.png)
 
 ## Remove dashboards and alert and action group
 
@@ -1233,7 +1235,7 @@ We set up an alert for when CPU usage crosses a threshold to notify us via email
    * Find the dashboard you want to delete. Click on the three dots (ellipsis) next to the dashboard name.
 3. Delete the Dashboard:
    * Select “Delete” from the dropdown menu.
-   * Confirm the deletion when prompted.#
+   * Confirm the deletion when prompted.
  
 ### Removing an Alert Rule
 1. Navigate to Azure Monitor:
@@ -1260,7 +1262,24 @@ We set up an alert for when CPU usage crosses a threshold to notify us via email
 
 # Re-create the 3-subnet architecture to make the database private
 
-![3-subnet architecture](image-2.png)
+![3-subnet architecture](images/image-2.png)
+* Public Subnet (10.0.2.0/24):
+    * Contains an Application VM (APP VM).
+    * An NSG allows inbound HTTP and SSH traffic.
+    * Traffic is routed to the DMZ subnet.
+* DMZ Subnet (10.0.3.0/24):
+    * Acts as an intermediary zone.
+    * A Network Virtual Appliance (NVA VM) with IP Forwarding and IP Tables rules is deployed to route and filter traffic.
+    * An NSG allows SSH traffic and IP forwarding is enabled to forward traffic to the private subnet.
+* Private Subnet (10.0.4.0/24):
+    * Contains a Database VM (DB VM).
+    * An NSG allows SSH and MongoDB (port 27017) traffic.
+    * All other inbound traffic is denied (secured from external threats).
+* Route table:
+    * Public traffic is routed through the route table to the DMZ subnet, where IP forwarding and security filtering occurs.
+    * Traffic is forwarded to the private subnet to communicate with the DB VM while restricting dangerous traffic.
+
+
  
 ## Set up the Virtual Network
  
@@ -1334,12 +1353,11 @@ Now we create the VM for the Network Virtual Appliance (NVA). This performs netw
 1. **Ensure** you've selected the correct options.
 2. **Create** your shiny new NVA.
 
-### Steps for Code-along
+### Steps for Code-along (3 subnet architecture)
 1. set up a new vnet - 3 subnet version
    1.  create 3 subnets and name then appropriately
    2.  give the addresses 10.0.2.0 for the public, 3 for the dmz and 4 for the private subnet
    3. for the private subnet enable the no outbound access - this mean whatever is in the subnet cannot access the internet
-  
    4. tag yourself as owner
    5. create
 2. Create db vm from image
@@ -1350,7 +1368,6 @@ Now we create the VM for the Network Virtual Appliance (NVA). This performs netw
    5. allow ssh (for now)
    6. disk as normal
    7. networking - choose the right vnet and subnet, no public ip
-   
 3. Create the app vm from image
    1. go to your ready-to-run-app image
    2. create a vm
@@ -1373,9 +1390,110 @@ Now we create the VM for the Network Virtual Appliance (NVA). This performs netw
    1. ssh into the app vm
    2. we want to ping the db vm ```ping 10.0.4.4```
    3. each message is the db replying and it also tells you how long the response takes (ctrl c/z to exit)
-    
+Note: To get the page + /posts page running at this stage before you make your route table:
+SSH into your app VM and run the following: 
+   ``` bash
+   export DB_HOST="mongodb://10.0.4.4:27017/posts"
+   cd /repo/app
+   sudo -E pm2 start app.js
+   ```
 6. set up routing (using a routing table)
-   1. search route table on az
-   2. create
-   3. go to resources
-   4. add a route
+Routes under Settings
+   1. Click **Routes**.
+   2. Click **Add**.
+   3. For the **route name**, input `to-private-subnet-route`.
+   4. For the **destination type**, select **IP addresses**.
+   5. For **Destination IP addresses/CIDR ranges**, we use the private subnet: `10.0.4.0/24`.
+   6. For the next **hop type**, select **Virtual appliance**.
+   7. For the next **hop address** input the **IP** of the NVA: `10.0.3.4`.
+   8. Select **Add**.
+ 
+Now we need to associate the route table to where the traffic comes out of.
+ 
+Subnet under Settings
+   1. Click **Associate**.
+   2. Choose your virtual network.
+   3. Select the **public-subnet**.
+7. enable ip forwarding on the NVA NIC
+   1. go to the network settings on the VM
+   2. tick the box that says enable ip forwarding 
+   3. SSH into the NVA VM and carry out the follwing commands (we need to make sure we update and upgrade): `sysctl net.ipv4.ip_forward` - this checks if it is on
+   `sudo nano /etc/sysctl.conf` - edit this configuration file and uncomment the line with net.ipv4.ip_forward
+   `sudo sysctl -p` - this reloads the configuration command
+   The ping should keep outputting and the posts page should be working now. 
+8. need to add the ip-table script in the NVA VM
+   1. [config-ip-table.sh](bash_scripts/config-ip-table.sh): use this script by using `nano`
+In the script: 
+`-A` : Stands for "Append." It adds a new rule to the end of a specified chain (e.g., INPUT, OUTPUT, FORWARD).
+ 
+`-i` : Stands for "Input interface." It specifies the network interface for incoming traffic.
+ 
+`-o` : Stands for "Output interface." It specifies the network interface for outgoing traffic.
+ 
+`-p` : Stands for "Protocol." It specifies the protocol used (e.g., TCP, UDP, ICMP).
+ 
+`--dport` : Stands for "Destination port." It specifies the port number for incoming traffic.
+ 
+`--sport` : Stands for "Source port." It specifies the port number for outgoing traffic.
+ 
+`-m` : Stands for "Match." It specifies a module that provides additional matching criteria (e.g., state, conntrack).
+ 
+`--state` : Used with the -m state module to specify the state of the connection (e.g., NEW, ESTABLISHED, RELATED, INVALID).
+ 
+`-j` : Stands for "Jump." It specifies the target action to take when a rule matches (e.g., ACCEPT, DROP, REJECT).
+   
+   2. change the permissions of the file by `chmod +x config-ip-table.sh`
+   3. Run the script `./config-ip-table.sh`
+---  
+9. Set Network Security Group Rules
+    1. Navigate to your **DB virtual machine**.
+    2.  Go to **Network Settings** under **Networking**.
+    3.  Click the `tech264-priyan-in-3-subnet-vnet-vm-nsg` link next to **Network security group**.
+    4.  Go to **inbound port rules** and click **Add**.
+    5.  Under **Source**, select **IP addresses**.
+    6.  Under **Source IP addresses/CIDR ranges**, input the **public subnet IP** `10.0.2.0/24`.
+    7.  Change the service to MongoDB.
+    8.  Change the name appropriately.
+10. Create a rule to deny everything else
+    1. **Add** another rule.
+    2.  Input a `*` to the **destination port ranges**.
+    3.  Change the priority to `500`.
+
+## How to make a Database private using a 3 Subnet Architecture
+
+* You have the following screenshots to visualise how to make it safer:
+  * Creating the VNet in the first place to ensure that you have an intemediary to route the traffic safely. 
+  * Making sure you delete the public ip for the DB.
+  * Creating the inbound rules as in the screenshot below.
+
+Screenshots:
+![3 tier - Subnet Created](images/image-5.png)
+
+<br>
+
+![DB VM from image](images/image-4.png)
+
+<br>
+
+![Route Table](images/image-6.png)
+
+<br>
+
+![alt text](images/image-7.png)
+
+<br>
+
+![alt text](images/image-8.png)
+
+<br>
+
+![alt text](images/image-9.png)
+
+
+### Stopping all the VMs and Restarting
+* When you start all three VMs again:
+  1) SSH into your app VM and export the environment variable. 
+  2) Then you can check if this is set with `printenv DB_HOST`. 
+  3) Run the command `sudo -E pm2 start app.js`: The -E basically reminds the system to check the the env variable we have created and use it when starting. 
+  4) Now search the public ip address with the `/posts` and it should work. 
+* **It is important to note** that it needs to be in this order if you do forget the step you can stop the process with `pm2 stop all` and restart. Or restart the VMs and SSH back in. 
