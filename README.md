@@ -1103,7 +1103,7 @@ echo "App started with pm2
 2. Select the NIC, load balancer, public ip and the actual scale set. 
  
 ### To SSH:
-Need to change the private IP with public and at the port which is 5000 (maybe try 5001). 
+Need to change the private IP with public and at the port which is 50000 (maybe try 50001). 
 
 Should look something like this:
 

@@ -37,6 +37,9 @@
   - [Availability Set](#availability-set)
   - [Availability Zone](#availability-zone)
   - [Virtual Machine Scale Set (VMSS)](#virtual-machine-scale-set-vmss)
+- [Blob Storage](#blob-storage)
+    - [The following steps are taken after you have created the app VM from the image you have created and SSH into. Go onto the "To create image to see how to".](#the-following-steps-are-taken-after-you-have-created-the-app-vm-from-the-image-you-have-created-and-ssh-into-go-onto-the-to-create-image-to-see-how-to)
+  - [Steps to get the picture onto the website.](#steps-to-get-the-picture-onto-the-website)
 
 
 ## Diagram of VM:
@@ -353,3 +356,86 @@ A service that allows for automatic scaling of a group of identical, load-balanc
 - Provisioning time can delay scaling.
 - Best suited for stateless applications.
 - Limited VM customisation in uniform mode.
+
+# Blob Storage
+### The following steps are taken after you have created the app VM from the image you have created and SSH into. [Go onto the "To create image to see how to".](../README.md)
+
+1. Insert `curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash` while SSH'd into your VM. This will **download** CLI.
+2. Insert `az login`. It will ask you to go to a link and **sign in** via a web browser, giving it the **code** to authenticate. The **code** will be in this same yellow line as the link.
+3. **Insert** the code on the browser input and select your account.
+4. Once signed in, close the window and **return** to your VM console.
+5. **Enter** the number for the subscription you wish to use.
+
+* Cannot use hyphens in the az cli
+  
+* Create account: `az storage account create --name tech264priyanstorage --resource-group tech264 --location uksouth --sku Standard_LRS`
+
+* `az storage account list --resource-group tech264`: to check the list of the resource group
+  
+* `az storage account list --resource-group tech264 --query "[].{Name:name, Location:location, Kind:kind}" --output table`: list but in table format
+
+* To create a storage container:
+```
+az storage container create \
+    --account-name tech264priyanstorage \
+    --name testcontainer \
+    --auth-mode login
+```
+Add this: `--auth-mode login` to ensure you are authorised. The `\` allows you to type on a new line. 
+
+* To delete storage container: 
+```
+az storage container delete \
+    --account-name tech264priyanstorage \
+    --name testcontainer \
+    --auth-mode login
+
+```
+
+* To list the containers made: 
+```
+az storage container list \
+    --account-name tech264priyanstorage \
+    --output table \
+    --auth-mode login
+
+```
+* To create a blob:
+```  
+  az storage blob upload \
+    --account-name tech264priyanstorage \
+    --container-name testcontainer \
+    --name newname.txt \
+    --file test.txt \
+    --auth-mode login
+```
+List your blobs:
+```
+az storage blob list \
+    --account-name tech264priyanstorage \
+    --container-name testcontainer \
+    --output table \
+    --auth-mode login
+```
+
+* To make the blob public: Check the Blob on the Azure Portal
+Go through yout storage account:
+* Azure Portal > Storage Account >
+
+To make it public: 
+
+* Change the access level
+* Go to storage account
+* (on the left) Settings > Configuration > Allow Blob anonymous access (enabble) > click save
+* Change access level > (left hand side) Data Storage > Containers > click on the container > change access to 'blob' > click "save".
+* refresh and now copy the link into your browser.
+ 
+
+ ## Steps to get the picture onto the website. 
+ 1) Create App VM from the image 
+ 2) Follow the above steps to get the AZ CLI
+ 3) And download the cat image 
+ 4) Make Blob public on the container (Verify this by searching it up)
+ 5) Add the url for the Blob in the html script under the `/repo/app/views` `index.ejs` and edit it so you have `<img src="https://tech264priyanstorage.blob.core.windows.net/images/uploadedcat.jpg">`
+ 6) Refresh the page and you should be at the stage as below. 
+ ![With cat Image](image-3.png)
