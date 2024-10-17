@@ -434,8 +434,12 @@ To make it public:
  ## Steps to get the picture onto the website. 
  1) Create App VM from the image 
  2) Follow the above steps to get the AZ CLI
- 3) And download the cat image 
- 4) Make Blob public on the container (Verify this by searching it up)
- 5) Add the url for the Blob in the html script under the `/repo/app/views` `index.ejs` and edit it so you have `<img src="https://tech264priyanstorage.blob.core.windows.net/images/uploadedcat.jpg">`
- 6) Refresh the page and you should be at the stage as below. 
- ![With cat Image](image-3.png)
+ 3) And download the cat image using the `wget` command with the link address of the cat. `wget -O newname.jpg <url>`
+ 4) Store this as a blob in a container using the steps above
+ 5) Make Blob public on the container (Verify this by searching it up)
+ 6) Add the url for the Blob in the html script under the `/repo/app/views` `index.ejs` and edit it so you have `<img src="https://tech264priyanstorage.blob.core.windows.net/images/uploadedcat.jpg">`
+ 7) Refresh the page and you should be at the stage as below. 
+  
+<br>
+
+![With cat Image](image-3.png)
