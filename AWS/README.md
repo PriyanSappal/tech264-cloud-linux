@@ -1,5 +1,18 @@
 # Deploying App in 2-tier architecture on AWS
- 
+
+- [Deploying App in 2-tier architecture on AWS](#deploying-app-in-2-tier-architecture-on-aws)
+    - [App and OS image](#app-and-os-image)
+    - [Instance Type](#instance-type)
+    - [Key Pair Login](#key-pair-login)
+    - [If previously created...](#if-previously-created)
+    - [Network Settings](#network-settings)
+    - [Check Inbound Port Rules](#check-inbound-port-rules)
+    - [Advanced details](#advanced-details)
+    - [Review](#review)
+    - [Connect to SSH](#connect-to-ssh)
+    - [Potential Blockers](#potential-blockers)
+
+
 1. In the search bar, type `EC2` and select it. After you have selected it, it will come up in your main dashboard. 
 2. Navigate to instances, then select **launch instances** on the right.
 3. Input an appropriate name that is intuitive.
